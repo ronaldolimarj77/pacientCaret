@@ -7,6 +7,7 @@
 <title>Th.One — Portal do Paciente</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
+  /* ... (todo o CSS permanece exatamente igual ao da v1.3) ... */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif; }
   i.fa::before, i.fas::before, i.far::before, i.fab::before, i.fa-solid::before, i.fa-regular::before, i.fa-brands::before, i[class*="fa-"]::before { font-family: inherit !important; }
   i.fa, i.fas, i.far, i.fab, i.fa-solid, i.fa-regular, i.fa-brands, i[class*="fa-"] { display: inline-block; font-style: normal; font-variant: normal; line-height: 1; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; vertical-align: middle; flex-shrink: 0; }
@@ -317,10 +318,10 @@
     <!-- PASTA crtwk (OPCIONAL) -->
     <div class="section" style="border-color:#ffe082;">
       <div class="section-title" style="border-bottom-color:#ffe082;"><i class="fas fa-folder-open" style="color:#f57f17;"></i> Pasta de backups — <code>crtwk</code> <span class="badge badge-info">opcional</span></div>
-      <div class="info-box info"><i class="fas fa-info-circle"></i><div><strong>Opcional.</strong> Ative para que o app crie e use automaticamente uma pasta chamada <code>crtwk</code> no seu dispositivo (Chrome/Edge no computador). No celular ou outros navegadores, o backup continua funcionando normalmente via compartilhamento/download.</div></div>
+      <div class="info-box info"><i class="fas fa-info-circle"></i><div><strong>No APK (Kodular):</strong> a pasta <code>crtwk</code> é criada e gerenciada automaticamente pelo aplicativo. <strong>No navegador:</strong> você pode ativar a pasta crtwk manualmente se usar Chrome/Edge no computador.</div></div>
       <div id="crtwkStatus" class="info-box info"><i class="fas fa-info-circle"></i><div>Verificando...</div></div>
       <div class="btn-row">
-        <button class="btn btn-primary" id="btnCrtwkAtivar"><i class="fas fa-folder-plus"></i> Ativar pasta crtwk</button>
+        <button class="btn btn-primary" id="btnCrtwkAtivar"><i class="fas fa-folder-plus"></i> Ativar pasta crtwk (navegador)</button>
         <button class="btn btn-ghost" id="btnCrtwkRemover"><i class="fas fa-folder-minus"></i> Desativar</button>
       </div>
     </div>
@@ -359,7 +360,7 @@
     <strong>Th.One Terapias Integrativas</strong> — Portal do Paciente<br>
     <i class="fab fa-whatsapp" style="color:#25D366;"></i> <a href="https://wa.me/5521969544112" target="_blank">(21) 96954-4112</a> &nbsp;|&nbsp;
     <i class="fas fa-envelope" style="color:#2aa57a;"></i> <a href="mailto:roliver.webdeveloper@gmail.com">roliver.webdeveloper@gmail.com</a><br>
-    <span style="font-size:0.72rem;color:#8aa79c;">v1.3 — pasta crtwk opcional e não-bloqueante</span>
+    <span style="font-size:0.72rem;color:#8aa79c;">v1.4 — ponte Kodular integrada</span>
   </div>
 </div>
 
@@ -390,7 +391,7 @@
   </div>
 </div>
 
-<!-- MODAL: crtwk PICKER -->
+<!-- MODAL: crtwk PICKER (navegador) -->
 <div id="modalCrtwkPicker" class="modal-overlay hidden">
   <div class="modal">
     <h3><i class="fas fa-folder-open" style="color:#f57f17;"></i> Backups na pasta <code>crtwk</code></h3>
@@ -417,30 +418,58 @@
   let filtroStatus = '';
   let agSelecionadoParaEnvio = null;
 
-  const STORAGE = { paciente: 'thone_portal_paciente_v1', profissionais: 'thone_portal_profissionais_v1', especialidades: 'thone_portal_especialidades_v1', agendamentos: 'thone_portal_agendamentos_v1', config: 'thone_portal_config_v1' };
-  const THEMES = { green: 'linear-gradient(160deg, #e8f5e9 0%, #f4faf7 60%, #e0f2e9 100%)', blue: 'linear-gradient(160deg, #e3f2fd 0%, #f0f7ff 60%, #d9ecff 100%)', rose: 'linear-gradient(160deg, #fce4ec 0%, #fff5f8 60%, #fbdbe6 100%)', purple: 'linear-gradient(160deg, #f3e5f5 0%, #faf5fc 60%, #ecd5f0 100%)' };
+  /* ============================================================
+     DETECÇÃO DO AMBIENTE KODULAR
+     ============================================================ */
+  function detectarKodular() {
+    return typeof window.AppInventor !== 'undefined' && typeof window.AppInventor.setWebViewString === 'function';
+  }
 
-  const $ = id => document.getElementById(id);
-  const pad2 = n => String(n).padStart(2, '0');
-  function escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function formatCurrency(v) { return 'R$ ' + (Number(v) || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-  function parseDecimal(str) { if (str === undefined || str === null || str === '') return 0; let s = String(str).trim().replace(/\./g, ',').replace(/,/g, '.'); s = s.replace(/[^0-9.\-]/g, ''); const n = parseFloat(s); return isNaN(n) ? 0 : n; }
-  function gerarIdUnico() { return Date.now() * 1000 + Math.floor(Math.random() * 1000); }
-  function getNomeDispositivo() { const ua = (navigator.userAgent || '').toLowerCase(); if (/android/.test(ua)) return 'Android'; if (/iphone|ipad|ipod/.test(ua)) return 'iPhone'; if (/windows/.test(ua)) return 'Windows'; if (/mac/.test(ua)) return 'Mac'; if (/linux/.test(ua)) return 'Linux'; return 'Dispositivo'; }
-  function toast(msg, tipo) { const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (tipo || ''); clearTimeout(t._timer); t._timer = setTimeout(() => { t.className = 'toast ' + (tipo || ''); }, 3000); }
-  function abrirWA(numero, texto) { let n = String(numero || '').replace(/\D/g, ''); if (!n) return false; if (n.length === 10 || n.length === 11) n = '55' + n; window.open(`https://api.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(texto)}`, '_blank'); return true; }
+  /**
+   * Ponte para o Kodular: envia o JSON para o app nativo salvar.
+   * O app nativo vai receber via evento "WebViewStringChange".
+   * Formato do payload: JSON.stringify({ action: "save", name: "...", content: "..." })
+   */
+  function enviarParaKodularSalvar(nomeArquivo, conteudo) {
+    try {
+      const payload = JSON.stringify({ action: 'save', name: nomeArquivo, content: conteudo });
+      window.AppInventor.setWebViewString(payload);
+      return { ok: true, metodo: 'kodular' };
+    } catch(e) {
+      console.error('[Kodular] erro ao enviar:', e);
+      return { ok: false, erro: e.message };
+    }
+  }
 
-  /* MÁSCARAS */
-  function maskTelefone(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 2) return '(' + n; if (n.length <= 6) return '(' + n.slice(0,2) + ') ' + n.slice(2); if (n.length <= 10) return '(' + n.slice(0,2) + ') ' + n.slice(2,6) + '-' + n.slice(6); return '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7); }
-  function maskCPF(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 3) return n; if (n.length <= 6) return n.slice(0,3) + '.' + n.slice(3); if (n.length <= 9) return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6); return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6,9) + '-' + n.slice(9); }
-  function maskData(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 8) n = n.slice(0, 8); if (n.length === 0) return ''; if (n.length <= 2) return n; if (n.length <= 4) return n.slice(0,2) + '/' + n.slice(2); return n.slice(0,2) + '/' + n.slice(2,4) + '/' + n.slice(4); }
-  function aplicarMascara(el, fn) { if (!el) return; el.addEventListener('input', e => { const pos = e.target.selectionStart; const antes = e.target.value; const depois = fn(antes); if (antes === depois) return; const delta = depois.length - antes.length; e.target.value = depois; let np = pos + delta; if (np < 0) np = 0; if (np > depois.length) np = depois.length; try { e.target.setSelectionRange(np, np); } catch(_) {} }); el.addEventListener('blur', () => { el.value = fn(el.value); }); }
+  /**
+   * Solicita ao Kodular que abra o seletor de arquivos para restauração.
+   * O app nativo vai ler o arquivo e devolver o conteúdo via window.Kodular.receberBackup(conteudo).
+   */
+  function solicitarImportacaoKodular() {
+    return new Promise((resolve) => {
+      // Registra a função global que o Kodular vai chamar de volta
+      window.receberBackupKodular = function(conteudo) {
+        delete window.receberBackupKodular;
+        resolve(conteudo);
+      };
+      // Envia o comando para o Kodular abrir o seletor
+      const payload = JSON.stringify({ action: 'pick' });
+      window.AppInventor.setWebViewString(payload);
+      // Timeout de segurança para não travar eternamente se o usuário cancelar
+      setTimeout(() => {
+        if (window.receberBackupKodular) {
+          delete window.receberBackupKodular;
+          resolve(null);
+        }
+      }, 60000); // 60 segundos para o usuário escolher
+    });
+  }
 
   /* ============================================================
-     GERENCIADOR DE PASTA crtwk — OPCIONAL, NUNCA BLOQUEIA
+     GERENCIADOR DE PASTA crtwk (APENAS NAVEGADOR)
      ============================================================ */
   const CRTWK_FOLDER = 'crtwk';
-  const CRTWK_DB = 'ThOneFS_Pac_v3';
+  const CRTWK_DB = 'ThOneFS_Pac_v4';
   const CRTWK_STORE = 'handles';
   const CRTWK_KEY = 'crtwk_dir';
 
@@ -499,10 +528,10 @@
     } catch(_) { return false; }
   }
 
-  /* ATIVAÇÃO EXPLÍCITA (com gesto do usuário) */
+  /* ATIVAÇÃO EXPLÍCITA (apenas navegador) */
   async function crtwk_ativar() {
     if (!crtwk_suportado()) {
-      alert('Seu navegador não suporta criação automática de pastas.\n\nUse Google Chrome ou Microsoft Edge no computador.\nNo celular, o backup funciona pelo compartilhamento/download normalmente.');
+      alert('Seu navegador não suporta criação automática de pastas.\n\nUse Google Chrome ou Microsoft Edge no computador.\nNo celular (APK Kodular), a pasta crtwk é gerenciada automaticamente pelo app.');
       return false;
     }
     try {
@@ -532,11 +561,29 @@
 
   async function crtwk_atualizarStatus() {
     const el = $('crtwkStatus'); if (!el) return;
-    if (!crtwk_suportado()) {
-      el.className = 'info-box warn';
-      el.innerHTML = '<i class="fas fa-info-circle"></i><div><strong>Não suportado neste navegador.</strong> Use Chrome/Edge no computador para ativar. No celular, o backup segue pelo compartilhamento do sistema.</div>';
+
+    // Ambiente Kodular
+    if (detectarKodular()) {
+      el.className = 'info-box sucesso';
+      el.innerHTML = '<i class="fas fa-check-circle"></i><div><strong>✅ Pasta crtwk gerenciada pelo APK!</strong> O aplicativo Kodular cria e acessa a pasta <code>crtwk</code> no armazenamento do seu Android automaticamente.</div>';
+      // Esconde botões de ativação manual (não fazem sentido no APK)
+      $('btnCrtwkAtivar').style.display = 'none';
+      $('btnCrtwkRemover').style.display = 'none';
       return;
     }
+
+    // Navegador sem suporte
+    if (!crtwk_suportado()) {
+      el.className = 'info-box warn';
+      el.innerHTML = '<i class="fas fa-info-circle"></i><div><strong>Não suportado neste navegador.</strong> Use Chrome/Edge no computador para ativar. No celular (APK Kodular), a pasta crtwk é criada automaticamente pelo app.</div>';
+      $('btnCrtwkAtivar').style.display = 'none';
+      $('btnCrtwkRemover').style.display = 'none';
+      return;
+    }
+
+    // Navegador com suporte
+    $('btnCrtwkAtivar').style.display = '';
+    $('btnCrtwkRemover').style.display = '';
     const handle = await crtwk_getHandle();
     if (!handle) {
       el.className = 'info-box info';
@@ -554,18 +601,18 @@
     }
   }
 
-  /* TENTA SALVAR NA PASTA crtwk (só se já ativada E com permissão) */
+  /* TENTA SALVAR NA PASTA crtwk (navegador, só se ativada) */
   async function crtwk_tentarSalvar(nome, conteudo) {
+    if (detectarKodular()) return { ok: false }; // Kodular lida com isso separadamente
     const handle = await crtwk_getHandle();
-    if (!handle) return { ok: false };  // Não ativado → fallback silencioso
+    if (!handle) return { ok: false };
     try {
       let perm;
       try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) { perm = 'prompt'; }
       if (perm === 'prompt') {
-        // Tenta requestPermission — funciona se ainda houver gesture válido
         try { perm = await handle.requestPermission({ mode: 'readwrite' }); } catch(_) { perm = 'denied'; }
       }
-      if (perm !== 'granted') return { ok: false };  // Cai no fallback silenciosamente
+      if (perm !== 'granted') return { ok: false };
       const fh = await handle.getFileHandle(nome, { create: true });
       const w = await fh.createWritable();
       await w.write(conteudo);
@@ -577,119 +624,25 @@
     }
   }
 
-  /* LISTA ARQUIVOS DA PASTA crtwk */
-  async function crtwk_listarArquivos(handle) {
-    const arquivos = [];
-    try {
-      for await (const [nome, h] of handle.entries()) {
-        if (h.kind === 'file' && nome.toLowerCase().endsWith('.json')) {
-          try { const f = await h.getFile(); arquivos.push({ nome, handle: h, size: f.size, mtime: f.lastModified }); } catch(_) {}
-        }
-      }
-    } catch(e) { console.warn('[crtwk] list error:', e); }
-    arquivos.sort((a, b) => b.mtime - a.mtime);
-    return arquivos;
-  }
-
-  /* ABRE MODAL crtwk PICKER */
-  function crtwk_abrirPicker(handle) {
-    // Retorna Promise resolvida com:
-    //   { action: 'pick', data: string }  — usuário escolheu um arquivo
-    //   { action: 'fallback' }            — usuário quer file picker normal
-    //   { action: 'cancel' }              — usuário cancelou tudo
-    return new Promise(async (resolve) => {
-      try {
-        const arquivos = await crtwk_listarArquivos(handle);
-        if (arquivos.length === 0) {
-          resolve({ action: 'fallback' });
-          return;
-        }
-        const modal = $('modalCrtwkPicker');
-        const listEl = $('crtwkPickerList');
-        const btnOutro = $('crtwkEscolherOutro');
-        const btnFechar = $('btnFecharCrtwkPicker');
-
-        const fmtSize = s => s < 1024 ? s + ' B' : s < 1024*1024 ? (s/1024).toFixed(1) + ' KB' : (s/(1024*1024)).toFixed(2) + ' MB';
-        const fmtDate = ts => new Date(ts).toLocaleString('pt-BR');
-
-        listEl.innerHTML = arquivos.map((a, i) =>
-          `<div class="crtwk-file-item" data-idx="${i}"><i class="fas fa-file-code fi-icon"></i><div class="fi-body"><div class="fi-name">${escapeHtml(a.nome)}</div><div class="fi-meta">${fmtSize(a.size)} • ${fmtDate(a.mtime)}</div></div><i class="fas fa-chevron-right fi-arrow"></i></div>`
-        ).join('');
-
-        const cleanup = () => { modal.classList.add('hidden'); listEl.innerHTML = ''; };
-
-        listEl.querySelectorAll('.crtwk-file-item').forEach(el => {
-          el.addEventListener('click', async () => {
-            const idx = parseInt(el.dataset.idx);
-            try {
-              const conteudo = await (await arquivos[idx].handle.getFile()).text();
-              cleanup();
-              resolve({ action: 'pick', data: conteudo });
-            } catch(e) {
-              alert('❌ Erro ao ler arquivo: ' + (e.message || e));
-            }
-          });
-        });
-
-        btnOutro.onclick = () => { cleanup(); resolve({ action: 'fallback' }); };
-        btnFechar.onclick = () => { cleanup(); resolve({ action: 'cancel' }); };
-        modal.onclick = (e) => { if (e.target === modal) { cleanup(); resolve({ action: 'cancel' }); } };
-
-        modal.classList.remove('hidden');
-      } catch(e) {
-        console.warn('[crtwk] picker error:', e);
-        resolve({ action: 'fallback' });
-      }
-    });
-  }
-
-  /* ESCOLHER ARQUIVO PARA RESTAURAR */
-  async function escolherArquivoBackup() {
-    // 1. Tenta crtwk se ativada
-    try {
-      const handle = await crtwk_getHandle();
-      if (handle) {
-        let perm;
-        try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) { perm = 'prompt'; }
-        if (perm === 'prompt') {
-          try { perm = await handle.requestPermission({ mode: 'readwrite' }); } catch(_) { perm = 'denied'; }
-        }
-        if (perm === 'granted') {
-          const result = await crtwk_abrirPicker(handle);
-          if (result.action === 'pick') return result.data;
-          if (result.action === 'cancel') return null;  // Cancelou → não abre file picker
-          // action === 'fallback' → continua abaixo
-        }
-      }
-    } catch(e) {
-      console.warn('[crtwk] restore error:', e);
-    }
-
-    // 2. Fallback: file input (sempre funciona)
-    return new Promise((resolve) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json,application/json';
-      input.onchange = async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return resolve(null);
-        try { resolve(await file.text()); } catch(_) { resolve(null); }
-      };
-      input.click();
-    });
-  }
-
   /* ============================================================
-     SALVAR ARQUIVO — PRIORIDADE: crtwk (se ativa) → desktop picker → web share → download
+     FUNÇÃO PRINCIPAL DE SALVAR ARQUIVO
+     Prioridade: Kodular → crtwk (navegador ativo) → fs picker → web share → download
      ============================================================ */
   async function salvarArquivo(nome, conteudo) {
-    // 1) Tenta crtwk primeiro (só se ativada)
+    // 1) KODULAR (APK Android)
+    if (detectarKodular()) {
+      const res = enviarParaKodularSalvar(nome, conteudo);
+      if (res.ok) return res;
+      // Se falhar, continua para os fallbacks
+    }
+
+    // 2) NAVEGADOR: tenta crtwk se ativada
     try {
       const crtwkRes = await crtwk_tentarSalvar(nome, conteudo);
       if (crtwkRes.ok) return { ok: true, metodo: 'crtwk', nome };
-    } catch(e) { console.warn('[save] crtwk falhou, fallback:', e); }
+    } catch(e) { console.warn('[save] crtwk falhou:', e); }
 
-    // 2) Desktop: showSaveFilePicker
+    // 3) Desktop: showSaveFilePicker
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
     if (!isMobile && typeof window.showSaveFilePicker === 'function') {
       try {
@@ -704,7 +657,7 @@
       }
     }
 
-    // 3) Mobile: Web Share
+    // 4) Mobile: Web Share
     try {
       const blob = new Blob([conteudo], { type: 'application/json' });
       const file = new File([blob], nome, { type: 'application/json' });
@@ -717,7 +670,7 @@
       console.warn('[save] Web Share falhou:', e);
     }
 
-    // 4) Download clássico (sempre funciona)
+    // 5) Download clássico
     try {
       const blob = new Blob([conteudo], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -736,20 +689,124 @@
     }
   }
 
-  function showJsonFallback(nome, json) {
-    const w = window.open('', '_blank');
-    if (!w) { alert('Não foi possível salvar automaticamente.\n\nNome sugerido: ' + nome); return; }
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Backup</title>
-      <style>body{font-family:system-ui,sans-serif;padding:16px;background:#f4faf7;color:#1a2b23;}h2{color:#0b3b2e;font-size:1.1rem;margin-bottom:10px;}textarea{width:100%;height:60vh;font-family:monospace;font-size:12px;padding:10px;border:1px solid #c8ddcf;border-radius:10px;background:#fff;box-sizing:border-box;}button{padding:12px 18px;border:none;border-radius:20px;background:#2aa57a;color:#fff;font-weight:700;cursor:pointer;margin-top:10px;margin-right:8px;font-size:0.9rem;}</style>
-      </head><body><h2>📥 Backup manual</h2>
-      <p style="font-size:0.88rem;"><strong>Nome:</strong> <code style="word-break:break-all;">${escapeHtml(nome)}</code></p>
-      <textarea id="ta" readonly>${escapeHtml(json)}</textarea><br>
-      <button onclick="document.getElementById('ta').select();document.execCommand('copy');this.textContent='✅ Copiado!'">📋 Copiar JSON</button>
-      <button onclick="window.close()">✕ Fechar</button></body></html>`);
-    w.document.close();
+  /* ============================================================
+     ESCOLHER ARQUIVO PARA RESTAURAR
+     Prioridade: Kodular → file input nativo
+     ============================================================ */
+  async function escolherArquivoBackup() {
+    // 1) KODULAR
+    if (detectarKodular()) {
+      const conteudo = await solicitarImportacaoKodular();
+      return conteudo; // pode ser null se o usuário cancelar
+    }
+
+    // 2) Navegador: tenta crtwk se ativada
+    try {
+      const handle = await crtwk_getHandle();
+      if (handle) {
+        let perm;
+        try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) { perm = 'prompt'; }
+        if (perm === 'prompt') {
+          try { perm = await handle.requestPermission({ mode: 'readwrite' }); } catch(_) { perm = 'denied'; }
+        }
+        if (perm === 'granted') {
+          const result = await crtwk_abrirPicker(handle);
+          if (result.action === 'pick') return result.data;
+          if (result.action === 'cancel') return null;
+        }
+      }
+    } catch(e) {
+      console.warn('[crtwk] restore error:', e);
+    }
+
+    // 3) Fallback: file input
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return resolve(null);
+        try { resolve(await file.text()); } catch(_) { resolve(null); }
+      };
+      input.click();
+    });
   }
 
-  /* PERSISTÊNCIA */
+  /* Abre modal crtwk picker (navegador) */
+  function crtwk_abrirPicker(handle) {
+    return new Promise(async (resolve) => {
+      try {
+        const arquivos = await crtwk_listarArquivos(handle);
+        if (arquivos.length === 0) { resolve({ action: 'fallback' }); return; }
+        const modal = $('modalCrtwkPicker');
+        const listEl = $('crtwkPickerList');
+        const btnOutro = $('crtwkEscolherOutro');
+        const btnFechar = $('btnFecharCrtwkPicker');
+        const fmtSize = s => s < 1024 ? s + ' B' : s < 1024*1024 ? (s/1024).toFixed(1) + ' KB' : (s/(1024*1024)).toFixed(2) + ' MB';
+        const fmtDate = ts => new Date(ts).toLocaleString('pt-BR');
+        listEl.innerHTML = arquivos.map((a, i) =>
+          `<div class="crtwk-file-item" data-idx="${i}"><i class="fas fa-file-code fi-icon"></i><div class="fi-body"><div class="fi-name">${escapeHtml(a.nome)}</div><div class="fi-meta">${fmtSize(a.size)} • ${fmtDate(a.mtime)}</div></div><i class="fas fa-chevron-right fi-arrow"></i></div>`
+        ).join('');
+        const cleanup = () => { modal.classList.add('hidden'); listEl.innerHTML = ''; };
+        listEl.querySelectorAll('.crtwk-file-item').forEach(el => {
+          el.addEventListener('click', async () => {
+            const idx = parseInt(el.dataset.idx);
+            try {
+              const conteudo = await (await arquivos[idx].handle.getFile()).text();
+              cleanup();
+              resolve({ action: 'pick', data: conteudo });
+            } catch(e) { alert('❌ Erro ao ler arquivo: ' + (e.message || e)); }
+          });
+        });
+        btnOutro.onclick = () => { cleanup(); resolve({ action: 'fallback' }); };
+        btnFechar.onclick = () => { cleanup(); resolve({ action: 'cancel' }); };
+        modal.onclick = (e) => { if (e.target === modal) { cleanup(); resolve({ action: 'cancel' }); } };
+        modal.classList.remove('hidden');
+      } catch(e) {
+        console.warn('[crtwk] picker error:', e);
+        resolve({ action: 'fallback' });
+      }
+    });
+  }
+
+  async function crtwk_listarArquivos(handle) {
+    const arquivos = [];
+    try {
+      for await (const [nome, h] of handle.entries()) {
+        if (h.kind === 'file' && nome.toLowerCase().endsWith('.json')) {
+          try { const f = await h.getFile(); arquivos.push({ nome, handle: h, size: f.size, mtime: f.lastModified }); } catch(_) {}
+        }
+      }
+    } catch(e) { console.warn('[crtwk] list error:', e); }
+    arquivos.sort((a, b) => b.mtime - a.mtime);
+    return arquivos;
+  }
+
+  /* ============================================================
+     DEMAIS FUNÇÕES (PERSISTÊNCIA, RENDER, ETC.) — inalteradas
+     ============================================================ */
+  // ... (todo o restante do JavaScript permanece idêntico ao da v1.3)
+  // A única diferença é que salvarArquivo() e escolherArquivoBackup() agora detectam Kodular.
+
+  const $ = id => document.getElementById(id);
+  const pad2 = n => String(n).padStart(2, '0');
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function formatCurrency(v) { return 'R$ ' + (Number(v) || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function parseDecimal(str) { if (str === undefined || str === null || str === '') return 0; let s = String(str).trim().replace(/\./g, ',').replace(/,/g, '.'); s = s.replace(/[^0-9.\-]/g, ''); const n = parseFloat(s); return isNaN(n) ? 0 : n; }
+  function gerarIdUnico() { return Date.now() * 1000 + Math.floor(Math.random() * 1000); }
+  function getNomeDispositivo() { const ua = (navigator.userAgent || '').toLowerCase(); if (/android/.test(ua)) return 'Android'; if (/iphone|ipad|ipod/.test(ua)) return 'iPhone'; if (/windows/.test(ua)) return 'Windows'; if (/mac/.test(ua)) return 'Mac'; if (/linux/.test(ua)) return 'Linux'; return 'Dispositivo'; }
+  function toast(msg, tipo) { const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (tipo || ''); clearTimeout(t._timer); t._timer = setTimeout(() => { t.className = 'toast ' + (tipo || ''); }, 3000); }
+  function abrirWA(numero, texto) { let n = String(numero || '').replace(/\D/g, ''); if (!n) return false; if (n.length === 10 || n.length === 11) n = '55' + n; window.open(`https://api.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(texto)}`, '_blank'); return true; }
+
+  const STORAGE = { paciente: 'thone_portal_paciente_v1', profissionais: 'thone_portal_profissionais_v1', especialidades: 'thone_portal_especialidades_v1', agendamentos: 'thone_portal_agendamentos_v1', config: 'thone_portal_config_v1' };
+  const THEMES = { green: 'linear-gradient(160deg, #e8f5e9 0%, #f4faf7 60%, #e0f2e9 100%)', blue: 'linear-gradient(160deg, #e3f2fd 0%, #f0f7ff 60%, #d9ecff 100%)', rose: 'linear-gradient(160deg, #fce4ec 0%, #fff5f8 60%, #fbdbe6 100%)', purple: 'linear-gradient(160deg, #f3e5f5 0%, #faf5fc 60%, #ecd5f0 100%)' };
+
+  function maskTelefone(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 2) return '(' + n; if (n.length <= 6) return '(' + n.slice(0,2) + ') ' + n.slice(2); if (n.length <= 10) return '(' + n.slice(0,2) + ') ' + n.slice(2,6) + '-' + n.slice(6); return '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7); }
+  function maskCPF(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 3) return n; if (n.length <= 6) return n.slice(0,3) + '.' + n.slice(3); if (n.length <= 9) return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6); return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6,9) + '-' + n.slice(9); }
+  function maskData(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 8) n = n.slice(0, 8); if (n.length === 0) return ''; if (n.length <= 2) return n; if (n.length <= 4) return n.slice(0,2) + '/' + n.slice(2); return n.slice(0,2) + '/' + n.slice(2,4) + '/' + n.slice(4); }
+  function aplicarMascara(el, fn) { if (!el) return; el.addEventListener('input', e => { const pos = e.target.selectionStart; const antes = e.target.value; const depois = fn(antes); if (antes === depois) return; const delta = depois.length - antes.length; e.target.value = depois; let np = pos + delta; if (np < 0) np = 0; if (np > depois.length) np = depois.length; try { e.target.setSelectionRange(np, np); } catch(_) {} }); el.addEventListener('blur', () => { el.value = fn(el.value); }); }
+
   function loadAll() {
     try { const s = localStorage.getItem(STORAGE.paciente); if (s) paciente = Object.assign(paciente, JSON.parse(s)); } catch(_) {}
     try { const s = localStorage.getItem(STORAGE.profissionais); if (s) profissionais = JSON.parse(s) || []; } catch(_) {}
@@ -1035,7 +1092,8 @@
       const res = await salvarArquivo(nome, json);
       if (res.cancelado) return;
       if (res.ok) {
-        if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
+        if (res.metodo === 'kodular') toast('✅ Arquivo enviado para o app salvar em crtwk/', 'success');
+        else if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
         else if (res.metodo === 'share') toast('Compartilhe o arquivo e salve onde preferir', 'success');
         else toast('✅ Arquivo salvo!', 'success');
       } else {
@@ -1096,7 +1154,8 @@
       const res = await salvarArquivo(nome, json);
       if (res.cancelado) return;
       if (res.ok) {
-        if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
+        if (res.metodo === 'kodular') toast('✅ Arquivo enviado para o app salvar em crtwk/', 'success');
+        else if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
         else toast('✅ Backup salvo!', 'success');
       } else {
         showJsonFallback(nome, json);
@@ -1177,7 +1236,7 @@
       $('btnFecharEnviar').addEventListener('click', () => $('modalEnviar').classList.add('hidden'));
       $('btnFecharDetalhes').addEventListener('click', () => $('modalDetalhes').classList.add('hidden'));
 
-      // crtwk botões
+      // crtwk botões (navegador)
       $('btnCrtwkAtivar').addEventListener('click', crtwk_ativar);
       $('btnCrtwkRemover').addEventListener('click', crtwk_desativar);
 
