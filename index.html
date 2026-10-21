@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2aa57a">
+<title>Th.One — Portal do Paciente</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif; }
+  i.fa::before, i.fas::before, i.far::before, i.fab::before, i.fa-solid::before, i.fa-regular::before, i.fa-brands::before, i[class*="fa-"]::before { font-family: inherit !important; }
+  i.fa, i.fas, i.far, i.fab, i.fa-solid, i.fa-regular, i.fa-brands, i[class*="fa-"] { display: inline-block; font-style: normal; font-variant: normal; line-height: 1; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; vertical-align: middle; flex-shrink: 0; }
+  html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+  html, body { overflow-x: hidden; width: 100%; max-width: 100%; }
+  body { background: linear-gradient(160deg, #e8f5e9 0%, #f4faf7 60%, #e0f2e9 100%); min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; align-items: flex-start; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); font-size: clamp(14px, 1.4vw + 10px, 16px); line-height: 1.5; color: #1a2b23; }
+  img, svg, video { max-width: 100%; height: auto; display: block; }
+  input, select, textarea, button { font: inherit; max-width: 100%; }
+  button { touch-action: manipulation; cursor: pointer; }
+  .app-card { max-width: 900px; width: 100%; min-width: 0; background: #fff; border-radius: clamp(18px, 2.5vw, 28px); box-shadow: 0 24px 48px rgba(0,60,40,0.12); padding: clamp(16px, 2.5vw, 32px) clamp(14px, 2vw, 28px); position: relative; }
+  .header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .header-logo { height: clamp(32px, 5vw, 52px); width: auto; max-width: 120px; object-fit: contain; border-radius: 8px; flex-shrink: 0; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-info h1 { font-size: clamp(0.95rem, 2vw + 0.7rem, 1.5rem); font-weight: 700; color: #0b3b2e; word-break: break-word; line-height: 1.2; }
+  .header-info .greeting { font-size: 0.82rem; color: #4a6a60; margin-top: 2px; word-break: break-word; }
+  .header-badge { background: #e8f5e9; color: #1b5e20; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; border: 1px solid #a5d6a7; letter-spacing: 0.3px; white-space: nowrap; flex-shrink: 0; }
+  .header-badge i { color: #2e7d32; margin-right: 4px; font-size: 1em; }
+  .subhead { color: #4a6a60; font-size: 0.85rem; margin-bottom: 16px; padding: 10px 14px; background: rgba(232, 245, 233, 0.7); border-left: 4px solid #2aa57a; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .subhead > span { word-break: break-word; min-width: 0; }
+  .theme-selector { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .theme-selector select { padding: 5px 10px; border-radius: 20px; border: 1px solid #c0d8cc; background: white; font-size: 0.8rem; color: #1a4a3a; outline: none; max-width: 100%; }
+  .nav-tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 2px solid #e6f0eb; padding-bottom: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .nav-tabs::-webkit-scrollbar { height: 4px; }
+  .nav-tabs::-webkit-scrollbar-thumb { background: #cfe6dc; border-radius: 10px; }
+  .nav-tabs button { padding: 9px 16px; border: none; background: transparent; font-weight: 600; font-size: 0.85rem; color: #6d8a80; cursor: pointer; border-radius: 20px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; min-height: 38px; flex-shrink: 0; }
+  .nav-tabs button:hover { background: #eefaf4; color: #1a4a3a; }
+  .nav-tabs button.active { background: #2aa57a; color: white; box-shadow: 0 4px 10px rgba(42,165,122,0.3); }
+  .nav-tabs button i { font-size: 1em; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .section { background: rgba(248, 253, 250, 0.9); border-radius: 18px; padding: 16px 16px 18px; border: 1px solid #e6f0eb; margin-bottom: 16px; min-width: 0; }
+  .section-title { font-weight: 700; font-size: 1rem; color: #1a4a3a; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px dashed #cfe6dc; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; word-break: break-word; }
+  .section-title i { color: #2aa57a; font-size: 1em; }
+  .form-group { margin-bottom: 12px; min-width: 0; }
+  .form-group label { display: block; font-weight: 600; color: #1a4a3a; font-size: 0.82rem; margin-bottom: 5px; word-break: break-word; }
+  .form-group label i { color: #2aa57a; font-size: 1em; }
+  .form-group label .req { color: #c73b3b; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  input[type="text"], input[type="email"], input[type="date"], input[type="time"], input[type="number"], input[type="tel"], select, textarea { width: 100%; padding: 11px 13px; border: 1px solid #c8ddcf; border-radius: 12px; background: #fff; color: #1a2b23; outline: none; transition: 0.15s; font-size: 0.92rem; min-height: 44px; }
+  input:focus, select:focus, textarea:focus { border-color: #2aa57a; box-shadow: 0 0 0 3px rgba(42,165,122,0.15); }
+  textarea { resize: vertical; min-height: 70px; font-family: inherit; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 30px; font-weight: 600; font-size: 0.88rem; padding: 11px 20px; min-height: 44px; border: none; cursor: pointer; transition: 0.15s; max-width: 100%; text-align: center; word-break: break-word; }
+  .btn i { font-size: 1em; flex-shrink: 0; }
+  .btn-primary { background: #2aa57a; color: #fff; }
+  .btn-primary:hover { background: #1a7d5a; box-shadow: 0 4px 12px rgba(42,165,122,0.3); }
+  .btn-success { background: #2e7d32; color: #fff; }
+  .btn-success:hover { background: #1b5e20; }
+  .btn-whats { background: #25D366; color: #fff; }
+  .btn-whats:hover { background: #1da851; }
+  .btn-warn { background: #f57f17; color: #fff; }
+  .btn-warn:hover { background: #e65100; }
+  .btn-danger { background: #c62828; color: #fff; }
+  .btn-danger:hover { background: #b71c1c; }
+  .btn-ghost { background: #fff; color: #347a60; border: 1px solid #c8ddcf; }
+  .btn-ghost:hover { background: #edfaf4; border-color: #8fc7b0; }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 7px 14px; font-size: 0.8rem; min-height: 36px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .btn-row > .btn { flex: 1 1 auto; }
+  .card { background: #fff; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid #dcece4; border-left: 4px solid #2aa57a; transition: 0.15s; min-width: 0; }
+  .card:hover { box-shadow: 0 4px 12px rgba(42,165,122,0.08); }
+  .card.cancelado { border-left-color: #c62828; opacity: 0.75; }
+  .card.realizado { border-left-color: #2e7d32; }
+  .card.faltou { border-left-color: #f57f17; }
+  .card.confirmado { border-left-color: #1976d2; }
+  .card-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .card-title { font-weight: 700; color: #0b3b2e; font-size: 0.98rem; flex: 1; min-width: 0; word-break: break-word; }
+  .card-meta { font-size: 0.85rem; color: #4a6a60; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 10px 14px; }
+  .card-meta span { display: inline-flex; align-items: center; gap: 4px; word-break: break-word; min-width: 0; }
+  .card-meta i { color: #2aa57a; font-size: 1em; }
+  .card-obs { margin-top: 8px; padding: 8px 12px; background: #f0fdf8; border-radius: 10px; font-size: 0.83rem; color: #4a6a60; word-break: break-word; }
+  .card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e6f0eb; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; flex-shrink: 0; }
+  .badge-agendado { background: #e6f0eb; color: #1a5a44; }
+  .badge-confirmado { background: #e3f2fd; color: #1565c0; }
+  .badge-realizado { background: #e8f5e9; color: #1b5e20; }
+  .badge-cancelado { background: #ffebee; color: #b71c1c; }
+  .badge-faltou { background: #fff9c4; color: #8a5a00; }
+  .badge-info { background: #e6f0fe; color: #1a4b77; }
+  .esp-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .empty { text-align: center; padding: 30px 16px; color: #6d8a80; font-size: 0.9rem; word-break: break-word; }
+  .empty i { font-size: 2.4rem; color: #cfe6dc; display: block; margin-bottom: 12px; }
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .dash-card { background: linear-gradient(135deg, #fff 0%, #f5fdfa 100%); border-radius: 16px; padding: 14px 16px; border: 1px solid #dcece4; position: relative; overflow: hidden; min-width: 0; }
+  .dash-card .label { font-size: 0.7rem; color: #6d8a80; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; word-break: break-word; }
+  .dash-card .value { font-size: clamp(1.3rem, 1.5vw + 1rem, 1.8rem); font-weight: 800; color: #0b3b2e; margin-top: 4px; word-break: break-word; }
+  .dash-card .sub { font-size: 0.72rem; color: #4a6a60; margin-top: 2px; word-break: break-word; }
+  .dash-card i.bg-icon { position: absolute; top: 12px; right: 14px; opacity: 0.1; pointer-events: none; font-size: 1.8rem; }
+  .dash-card.verde i.bg-icon { color: #2aa57a; }
+  .dash-card.azul i.bg-icon { color: #1976d2; }
+  .dash-card.laranja i.bg-icon { color: #f57f17; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 16px; overflow-y: auto; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: #fff; border-radius: 22px; max-width: 620px; width: 100%; padding: 22px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-height: 92vh; max-height: 92dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; min-width: 0; }
+  .modal h3 { color: #0b3b2e; font-size: 1.1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; word-break: break-word; }
+  .modal h3 i { color: #2aa57a; font-size: 1em; }
+  .modal .btn-row { justify-content: flex-end; }
+  .info-box { background: #e8f8ee; border-left: 4px solid #25D366; padding: 12px 14px; border-radius: 12px; font-size: 0.86rem; color: #128C7E; margin-bottom: 14px; line-height: 1.55; display: flex; gap: 10px; align-items: flex-start; word-break: break-word; min-width: 0; }
+  .info-box i { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+  .info-box.warn { background: #fff9e0; border-left-color: #f57f17; color: #8a5a00; }
+  .info-box.warn i { color: #f57f17; }
+  .info-box.info { background: #e6f0fe; border-left-color: #2a7de1; color: #1a4b77; }
+  .info-box.info i { color: #2a7de1; }
+  .info-box.sucesso { background: #e8f5e9; border-left-color: #2e7d32; color: #1b5e20; }
+  .info-box.sucesso i { color: #2e7d32; }
+  .footer { margin-top: 26px; padding-top: 18px; border-top: 1px solid #e2f0e9; text-align: center; font-size: 0.78rem; color: #4a6a60; line-height: 1.7; word-break: break-word; }
+  .footer strong { color: #0b3b2e; }
+  .footer a { color: #2aa57a; text-decoration: none; word-break: break-all; }
+  .footer i { font-size: 1em; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0b3b2e; color: #fff; padding: 11px 22px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; z-index: 99999; box-shadow: 0 8px 24px rgba(0,0,0,0.3); max-width: 90%; text-align: center; opacity: 0; transition: opacity 0.25s; pointer-events: none; word-break: break-word; }
+  .toast.show { opacity: 1; }
+  .toast.success { background: #2e7d32; }
+  .toast.error { background: #c62828; }
+  .crtwk-file-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #dcece4; border-radius: 12px; background: #f9fdfb; margin-bottom: 8px; cursor: pointer; transition: 0.15s; }
+  .crtwk-file-item:hover { background: #f0fdf8; border-color: #2aa57a; }
+  .crtwk-file-item .fi-icon { color: #2aa57a; font-size: 1.4rem; flex-shrink: 0; }
+  .crtwk-file-item .fi-body { flex: 1; min-width: 0; word-break: break-all; }
+  .crtwk-file-item .fi-name { font-weight: 600; color: #0b3b2e; font-size: 0.88rem; }
+  .crtwk-file-item .fi-meta { font-size: 0.75rem; color: #4a6a60; margin-top: 2px; }
+  .crtwk-file-item .fi-arrow { color: #8aa79c; flex-shrink: 0; }
+  @media (max-width: 600px) {
+    body { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+    .app-card { padding: 14px 12px; border-radius: 18px; }
+    .form-row { grid-template-columns: 1fr; }
+    .nav-tabs button { padding: 8px 12px; font-size: 0.8rem; }
+    .card-header { flex-wrap: wrap; }
+    .dash-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dash-card { padding: 10px 12px; }
+    .dash-card i.bg-icon { font-size: 1.5rem; top: 8px; right: 10px; }
+    .section { padding: 12px 12px 14px; border-radius: 14px; }
+    .section-title { font-size: 0.95rem; }
+    .modal { padding: 18px 14px; border-radius: 18px; }
+    .modal .btn-row { flex-direction: column-reverse; }
+    .modal .btn-row > .btn { width: 100%; }
+    .btn { font-size: 0.85rem; }
+    .header-info h1 { font-size: 1rem; }
+    .header-badge { font-size: 0.68rem; padding: 3px 10px; }
+    .subhead { font-size: 0.8rem; padding: 8px 12px; }
+    .theme-selector select { font-size: 0.76rem; }
+  }
+  @media (max-width: 400px) {
+    body { padding: 6px; font-size: 13.5px; }
+    .app-card { padding: 12px 10px; border-radius: 14px; }
+    .nav-tabs button { padding: 7px 10px; font-size: 0.74rem; gap: 4px; }
+    .nav-tabs { gap: 2px; }
+    .dash-grid { gap: 6px; }
+    .dash-card { padding: 9px 11px; border-radius: 12px; }
+    .dash-card .value { font-size: 1.2rem; }
+    .dash-card .label { font-size: 0.62rem; }
+    .dash-card .sub { font-size: 0.66rem; }
+    .card { padding: 12px 12px; border-radius: 14px; }
+    .btn-sm { padding: 7px 11px; font-size: 0.76rem; min-height: 34px; }
+    .btn { padding: 10px 16px; font-size: 0.82rem; min-height: 42px; }
+    .section-title { font-size: 0.9rem; }
+    .header-info h1 { font-size: 0.95rem; }
+    .modal h3 { font-size: 1rem; }
+    .empty { padding: 22px 12px; font-size: 0.85rem; }
+    .empty i { font-size: 2rem; }
+    .info-box { padding: 10px 12px; font-size: 0.8rem; }
+  }
+  @media (max-width: 340px) {
+    .nav-tabs button { padding: 6px 8px; font-size: 0.7rem; gap: 3px; }
+    .dash-card .value { font-size: 1.05rem; }
+    .header-info h1 { font-size: 0.88rem; }
+    .btn-sm { padding: 6px 9px; font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-card">
+
+  <div class="header">
+    <img id="headerLogo" class="header-logo" style="display:none;" alt="Logo" onerror="this.style.display='none';document.getElementById('headerIcon').style.display='inline-block';">
+    <i class="fas fa-spa" id="headerIcon" style="font-size:1.8rem;color:#2aa57a;display:none;"></i>
+    <div class="header-info">
+      <h1 id="clinicaNome">Th.One Terapias Integrativas</h1>
+      <div class="greeting" id="greeting">Portal do Paciente</div>
+    </div>
+    <span class="header-badge" id="statusBadge"><i class="fas fa-user-circle"></i> Visitante</span>
+  </div>
+
+  <div class="subhead">
+    <span><i class="fas fa-heart" style="color:#e91e63;margin-right:6px;"></i> Agende, envie por WhatsApp e receba retorno do profissional.</span>
+    <div class="theme-selector">
+      <i class="fas fa-palette" style="color:#2aa57a;"></i>
+      <select id="themeSelect">
+        <option value="green">Verde</option>
+        <option value="blue">Azul</option>
+        <option value="rose">Rosa</option>
+        <option value="purple">Roxo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="active" data-tab="inicio"><i class="fas fa-home"></i><span>Início</span></button>
+    <button data-tab="agendar"><i class="fas fa-calendar-plus"></i><span>Agendar</span></button>
+    <button data-tab="meus"><i class="fas fa-list-ul"></i><span>Meus Agendamentos</span></button>
+    <button data-tab="profissionais"><i class="fas fa-user-md"></i><span>Profissionais</span></button>
+    <button data-tab="cadastro"><i class="fas fa-user"></i><span>Meu Cadastro</span></button>
+    <button data-tab="config"><i class="fas fa-cog"></i><span>Configurações</span></button>
+  </div>
+
+  <!-- INÍCIO -->
+  <div id="tab-inicio" class="tab-content active">
+    <div id="bannerSemCadastro"></div>
+    <div class="dash-grid">
+      <div class="dash-card verde"><i class="fas fa-calendar-check bg-icon"></i><div class="label">Agendamentos</div><div class="value" id="dashTotal">0</div><div class="sub" id="dashTotalSub">nenhum</div></div>
+      <div class="dash-card azul"><i class="fas fa-clock bg-icon"></i><div class="label">Próximo</div><div class="value" id="dashProxQtd">—</div><div class="sub" id="dashProxSub">sem próximo</div></div>
+      <div class="dash-card laranja"><i class="fas fa-user-md bg-icon"></i><div class="label">Profissionais</div><div class="value" id="dashProfQtd">0</div><div class="sub" id="dashProfSub">importados</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><i class="fas fa-bolt"></i> Ações rápidas</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="trocarTab('agendar')"><i class="fas fa-calendar-plus"></i> Novo agendamento</button>
+        <button class="btn btn-ghost" onclick="trocarTab('profissionais')"><i class="fas fa-user-md"></i> Ver profissionais</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title"><i class="fas fa-calendar-day"></i> Próximos agendamentos</div>
+      <div id="inicioProximos"></div>
+    </div>
+  </div>
+
+  <!-- AGENDAR -->
+  <div id="tab-agendar" class="tab-content">
+    <div class="section">
+      <div class="section-title"><i class="fas fa-calendar-plus"></i> Novo Agendamento</div>
+      <div id="agendarAviso"></div>
+      <div class="form-group"><label><i class="fas fa-user-md"></i> Profissional <span class="req">*</span></label><select id="agProf"><option value="">— Selecione —</option></select></div>
+      <div class="form-group"><label><i class="fas fa-leaf"></i> Especialidade <span class="req">*</span></label><select id="agEsp"><option value="">— Selecione —</option></select></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;"><label><i class="fas fa-calendar"></i> Data <span class="req">*</span></label><input type="date" id="agData"></div>
+        <div class="form-group" style="margin-bottom:0;"><label><i class="fas fa-clock"></i> Hora <span class="req">*</span></label><input type="time" id="agHora" value="09:00"></div>
+      </div>
+      <div class="form-row" style="margin-top:10px;">
+        <div class="form-group" style="margin-bottom:0;"><label><i class="fas fa-hourglass-half"></i> Duração (min)</label><input type="number" id="agDur" placeholder="60" min="15" max="480"></div>
+        <div class="form-group" style="margin-bottom:0;"><label><i class="fas fa-dollar-sign"></i> Valor (R$)</label><input type="text" id="agValor" placeholder="0,00" inputmode="decimal"></div>
+      </div>
+      <div class="form-group" style="margin-top:12px;"><label><i class="fas fa-notes-medical"></i> Observações / Sintomas</label><textarea id="agObs" rows="3" placeholder="Descreva brevemente o motivo do atendimento..."></textarea></div>
+      <div class="info-box"><i class="fab fa-whatsapp"></i><div>Ao salvar, você poderá <strong>enviar o agendamento ao profissional por WhatsApp</strong> (texto e/ou JSON) e <strong>adicionar ao Google Agenda</strong>.</div></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="limparFormAgendamento()"><i class="fas fa-eraser"></i> Limpar</button>
+        <button class="btn btn-primary" id="btnSalvarAg"><i class="fas fa-save"></i> Salvar agendamento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEUS AGENDAMENTOS -->
+  <div id="tab-meus" class="tab-content">
+    <div class="section">
+      <div class="section-title"><i class="fas fa-list-ul"></i> Meus Agendamentos</div>
+      <div class="form-group"><label><i class="fas fa-filter"></i> Filtrar por status</label>
+        <select id="filtroStatus">
+          <option value="">Todos</option><option value="Agendado">Agendado</option><option value="Confirmado">Confirmado</option><option value="Realizado">Realizado</option><option value="Cancelado">Cancelado</option><option value="Faltou">Faltou</option>
+        </select>
+      </div>
+      <div id="meusAgendamentos"></div>
+    </div>
+  </div>
+
+  <!-- PROFISSIONAIS -->
+  <div id="tab-profissionais" class="tab-content">
+    <div class="section">
+      <div class="section-title"><i class="fas fa-user-md"></i> Profissionais & Especialidades</div>
+      <div class="info-box info"><i class="fas fa-info-circle"></i><div><strong>Como funciona:</strong> solicite ao profissional via WhatsApp o envio de um <strong>backup incremental</strong> com <strong>profissionais e especialidades</strong>. Ao receber o <code>.json</code>, toque em <strong>Importar backup</strong>.</div></div>
+      <div class="btn-row">
+        <button class="btn btn-whats" id="btnSolicitarProf"><i class="fab fa-whatsapp"></i> Solicitar via WhatsApp</button>
+        <button class="btn btn-primary" id="btnImportarProf"><i class="fas fa-file-import"></i> Importar backup</button>
+      </div>
+      <div style="margin-top:20px;"><div class="section-title"><i class="fas fa-users"></i> Profissionais <span class="badge badge-info" id="countProf">0</span></div><div id="listaProfissionais"></div></div>
+      <div style="margin-top:20px;"><div class="section-title"><i class="fas fa-leaf"></i> Especialidades <span class="badge badge-info" id="countEsp">0</span></div><div id="listaEspecialidades"></div></div>
+    </div>
+  </div>
+
+  <!-- MEU CADASTRO -->
+  <div id="tab-cadastro" class="tab-content">
+    <div class="section">
+      <div class="section-title"><i class="fas fa-user-circle"></i> Meu Cadastro</div>
+      <div class="info-box info"><i class="fas fa-lock"></i><div>Seus dados ficam <strong>apenas neste dispositivo</strong>.</div></div>
+      <div class="form-group"><label>Nome completo <span class="req">*</span></label><input type="text" id="cadNome" placeholder="Seu nome completo"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;"><label>WhatsApp / Telefone</label><input type="tel" id="cadTelefone" placeholder="(21) 99999-9999" inputmode="numeric"></div>
+        <div class="form-group" style="margin-bottom:0;"><label>E-mail</label><input type="email" id="cadEmail" placeholder="seu@email.com"></div>
+      </div>
+      <div class="form-row" style="margin-top:10px;">
+        <div class="form-group" style="margin-bottom:0;"><label>Data de nascimento</label><input type="text" id="cadNasc" placeholder="dd/mm/aaaa" inputmode="numeric"></div>
+        <div class="form-group" style="margin-bottom:0;"><label>CPF</label><input type="text" id="cadCpf" placeholder="999.999.999-99" inputmode="numeric"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px;"><label>Endereço</label><input type="text" id="cadEndereco" placeholder="Rua, número, bairro, cidade"></div>
+      <div class="form-group"><label>Observações (alergias, histórico, medicações)</label><textarea id="cadObs" rows="3" placeholder="Informações relevantes"></textarea></div>
+      <div class="btn-row"><button class="btn btn-primary btn-block" id="btnSalvarCadastro"><i class="fas fa-save"></i> Salvar meus dados</button></div>
+    </div>
+  </div>
+
+  <!-- CONFIGURAÇÕES -->
+  <div id="tab-config" class="tab-content">
+
+    <div class="section">
+      <div class="section-title"><i class="fas fa-building"></i> Dados da Clínica / Central</div>
+      <div class="form-group"><label>Nome da clínica</label><input type="text" id="cfgNomeClinica" placeholder="Th.One Terapias Integrativas"></div>
+      <div class="form-group"><label>WhatsApp da central / profissional</label><input type="tel" id="cfgTelefoneCentral" placeholder="(21) 99999-9999" inputmode="numeric"></div>
+      <div class="btn-row"><button class="btn btn-primary" id="btnSalvarCfg"><i class="fas fa-save"></i> Salvar</button></div>
+    </div>
+
+    <!-- PASTA crtwk (OPCIONAL) -->
+    <div class="section" style="border-color:#ffe082;">
+      <div class="section-title" style="border-bottom-color:#ffe082;"><i class="fas fa-folder-open" style="color:#f57f17;"></i> Pasta de backups — <code>crtwk</code> <span class="badge badge-info">opcional</span></div>
+      <div class="info-box info"><i class="fas fa-info-circle"></i><div><strong>Opcional.</strong> Ative para que o app crie e use automaticamente uma pasta chamada <code>crtwk</code> no seu dispositivo (Chrome/Edge no computador). No celular ou outros navegadores, o backup continua funcionando normalmente via compartilhamento/download.</div></div>
+      <div id="crtwkStatus" class="info-box info"><i class="fas fa-info-circle"></i><div>Verificando...</div></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnCrtwkAtivar"><i class="fas fa-folder-plus"></i> Ativar pasta crtwk</button>
+        <button class="btn btn-ghost" id="btnCrtwkRemover"><i class="fas fa-folder-minus"></i> Desativar</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><i class="fas fa-file-export"></i> Enviar agendamentos ao profissional</div>
+      <div class="info-box"><i class="fab fa-whatsapp"></i><div>Gera um arquivo <code>ThOne_INC_...json</code> com seus dados e agendamentos. Envie ao profissional pelo WhatsApp.</div></div>
+      <div class="btn-row">
+        <button class="btn btn-success" id="btnExportarInc"><i class="fas fa-file-export"></i> Exportar (Incremental)</button>
+        <button class="btn btn-whats" id="btnExportarWhats"><i class="fab fa-whatsapp"></i> Enviar via WhatsApp</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><i class="fas fa-file-import"></i> Importar backup do profissional</div>
+      <div class="info-box info"><i class="fas fa-info-circle"></i><div>Importa profissionais, especialidades e atualizações dos seus agendamentos.</div></div>
+      <button class="btn btn-primary btn-block" id="btnImportarCompleto"><i class="fas fa-file-import"></i> Importar backup</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><i class="fas fa-database"></i> Backup completo do Portal</div>
+      <div class="info-box warn"><i class="fas fa-exclamation-triangle"></i><div>Salva <strong>tudo</strong> neste portal (seus dados, profissionais importados, agendamentos).</div></div>
+      <div class="btn-row">
+        <button class="btn btn-success" id="btnBackupPortal"><i class="fas fa-download"></i> Backup completo</button>
+        <button class="btn btn-ghost" id="btnRestorePortal"><i class="fas fa-upload"></i> Restaurar</button>
+      </div>
+    </div>
+
+    <div class="section" style="border-color:#ffcdd2;">
+      <div class="section-title" style="border-bottom-color:#ffcdd2;color:#b71c1c;"><i class="fas fa-trash-alt"></i> Zona de risco</div>
+      <button class="btn btn-danger btn-block" id="btnLimparTudo"><i class="fas fa-trash-alt"></i> Apagar todos os dados deste portal</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Th.One Terapias Integrativas</strong> — Portal do Paciente<br>
+    <i class="fab fa-whatsapp" style="color:#25D366;"></i> <a href="https://wa.me/5521969544112" target="_blank">(21) 96954-4112</a> &nbsp;|&nbsp;
+    <i class="fas fa-envelope" style="color:#2aa57a;"></i> <a href="mailto:roliver.webdeveloper@gmail.com">roliver.webdeveloper@gmail.com</a><br>
+    <span style="font-size:0.72rem;color:#8aa79c;">v1.3 — pasta crtwk opcional e não-bloqueante</span>
+  </div>
+</div>
+
+<!-- MODAL: ENVIO -->
+<div id="modalEnviar" class="modal-overlay hidden">
+  <div class="modal">
+    <h3><i class="fab fa-whatsapp" style="color:#25D366;"></i> Enviar agendamento</h3>
+    <div id="modalEnviarInfo" style="margin-bottom:14px;"></div>
+    <div class="btn-row" style="flex-direction:column;align-items:stretch;">
+      <button class="btn btn-whats btn-block" id="btnEnviarTexto"><i class="fab fa-whatsapp"></i> Enviar resumo por WhatsApp (texto)</button>
+      <button class="btn btn-success btn-block" id="btnEnviarArquivo"><i class="fas fa-file-export"></i> Salvar arquivo JSON</button>
+      <button class="btn btn-primary btn-block" id="btnAddGcal"><i class="fab fa-google"></i> Adicionar ao Google Agenda</button>
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:16px;">
+      <button class="btn btn-ghost" id="btnFecharEnviar"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETALHES -->
+<div id="modalDetalhes" class="modal-overlay hidden">
+  <div class="modal">
+    <h3><i class="fas fa-info-circle"></i> Detalhes do Agendamento</h3>
+    <div id="modalDetalhesBody"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:14px;">
+      <button class="btn btn-ghost" id="btnFecharDetalhes"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: crtwk PICKER -->
+<div id="modalCrtwkPicker" class="modal-overlay hidden">
+  <div class="modal">
+    <h3><i class="fas fa-folder-open" style="color:#f57f17;"></i> Backups na pasta <code>crtwk</code></h3>
+    <div id="crtwkPickerList" style="max-height:400px;overflow-y:auto;margin-bottom:14px;padding-right:4px;"></div>
+    <div class="btn-row" style="justify-content:space-between;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" id="crtwkEscolherOutro"><i class="fas fa-file-import"></i> Escolher outro arquivo</button>
+      <button class="btn btn-ghost btn-sm" id="btnFecharCrtwkPicker"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  let paciente = { id: null, nome: '', telefone: '', email: '', nascimento: '', cpf: '', endereco: '', obs: '' };
+  let profissionais = [];
+  let especialidades = [];
+  let agendamentos = [];
+  let nextAgId = 1;
+  let config = { nomeClinica: 'Th.One Terapias Integrativas', telefoneCentral: '', tema: 'green', logo: null };
+  let filtroStatus = '';
+  let agSelecionadoParaEnvio = null;
+
+  const STORAGE = { paciente: 'thone_portal_paciente_v1', profissionais: 'thone_portal_profissionais_v1', especialidades: 'thone_portal_especialidades_v1', agendamentos: 'thone_portal_agendamentos_v1', config: 'thone_portal_config_v1' };
+  const THEMES = { green: 'linear-gradient(160deg, #e8f5e9 0%, #f4faf7 60%, #e0f2e9 100%)', blue: 'linear-gradient(160deg, #e3f2fd 0%, #f0f7ff 60%, #d9ecff 100%)', rose: 'linear-gradient(160deg, #fce4ec 0%, #fff5f8 60%, #fbdbe6 100%)', purple: 'linear-gradient(160deg, #f3e5f5 0%, #faf5fc 60%, #ecd5f0 100%)' };
+
+  const $ = id => document.getElementById(id);
+  const pad2 = n => String(n).padStart(2, '0');
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function formatCurrency(v) { return 'R$ ' + (Number(v) || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function parseDecimal(str) { if (str === undefined || str === null || str === '') return 0; let s = String(str).trim().replace(/\./g, ',').replace(/,/g, '.'); s = s.replace(/[^0-9.\-]/g, ''); const n = parseFloat(s); return isNaN(n) ? 0 : n; }
+  function gerarIdUnico() { return Date.now() * 1000 + Math.floor(Math.random() * 1000); }
+  function getNomeDispositivo() { const ua = (navigator.userAgent || '').toLowerCase(); if (/android/.test(ua)) return 'Android'; if (/iphone|ipad|ipod/.test(ua)) return 'iPhone'; if (/windows/.test(ua)) return 'Windows'; if (/mac/.test(ua)) return 'Mac'; if (/linux/.test(ua)) return 'Linux'; return 'Dispositivo'; }
+  function toast(msg, tipo) { const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (tipo || ''); clearTimeout(t._timer); t._timer = setTimeout(() => { t.className = 'toast ' + (tipo || ''); }, 3000); }
+  function abrirWA(numero, texto) { let n = String(numero || '').replace(/\D/g, ''); if (!n) return false; if (n.length === 10 || n.length === 11) n = '55' + n; window.open(`https://api.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(texto)}`, '_blank'); return true; }
+
+  /* MÁSCARAS */
+  function maskTelefone(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 2) return '(' + n; if (n.length <= 6) return '(' + n.slice(0,2) + ') ' + n.slice(2); if (n.length <= 10) return '(' + n.slice(0,2) + ') ' + n.slice(2,6) + '-' + n.slice(6); return '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7); }
+  function maskCPF(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 11) n = n.slice(0, 11); if (n.length === 0) return ''; if (n.length <= 3) return n; if (n.length <= 6) return n.slice(0,3) + '.' + n.slice(3); if (n.length <= 9) return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6); return n.slice(0,3) + '.' + n.slice(3,6) + '.' + n.slice(6,9) + '-' + n.slice(9); }
+  function maskData(v) { let n = String(v || '').replace(/\D/g, ''); if (n.length > 8) n = n.slice(0, 8); if (n.length === 0) return ''; if (n.length <= 2) return n; if (n.length <= 4) return n.slice(0,2) + '/' + n.slice(2); return n.slice(0,2) + '/' + n.slice(2,4) + '/' + n.slice(4); }
+  function aplicarMascara(el, fn) { if (!el) return; el.addEventListener('input', e => { const pos = e.target.selectionStart; const antes = e.target.value; const depois = fn(antes); if (antes === depois) return; const delta = depois.length - antes.length; e.target.value = depois; let np = pos + delta; if (np < 0) np = 0; if (np > depois.length) np = depois.length; try { e.target.setSelectionRange(np, np); } catch(_) {} }); el.addEventListener('blur', () => { el.value = fn(el.value); }); }
+
+  /* ============================================================
+     GERENCIADOR DE PASTA crtwk — OPCIONAL, NUNCA BLOQUEIA
+     ============================================================ */
+  const CRTWK_FOLDER = 'crtwk';
+  const CRTWK_DB = 'ThOneFS_Pac_v3';
+  const CRTWK_STORE = 'handles';
+  const CRTWK_KEY = 'crtwk_dir';
+
+  function crtwk_suportado() { return typeof window.showDirectoryPicker === 'function'; }
+
+  function crtwk_openDB() {
+    return new Promise((resolve, reject) => {
+      try {
+        const req = indexedDB.open(CRTWK_DB, 1);
+        req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(CRTWK_STORE)) req.result.createObjectStore(CRTWK_STORE); };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      } catch(e) { reject(e); }
+    });
+  }
+
+  async function crtwk_getHandle() {
+    try {
+      const db = await crtwk_openDB();
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(CRTWK_STORE, 'readonly');
+          const req = tx.objectStore(CRTWK_STORE).get(CRTWK_KEY);
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        } catch(_) { resolve(null); }
+      });
+    } catch(_) { return null; }
+  }
+
+  async function crtwk_setHandle(handle) {
+    try {
+      const db = await crtwk_openDB();
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(CRTWK_STORE, 'readwrite');
+          tx.objectStore(CRTWK_STORE).put(handle, CRTWK_KEY);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch(_) { resolve(false); }
+      });
+    } catch(_) { return false; }
+  }
+
+  async function crtwk_removerHandle() {
+    try {
+      const db = await crtwk_openDB();
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(CRTWK_STORE, 'readwrite');
+          tx.objectStore(CRTWK_STORE).delete(CRTWK_KEY);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch(_) { resolve(false); }
+      });
+    } catch(_) { return false; }
+  }
+
+  /* ATIVAÇÃO EXPLÍCITA (com gesto do usuário) */
+  async function crtwk_ativar() {
+    if (!crtwk_suportado()) {
+      alert('Seu navegador não suporta criação automática de pastas.\n\nUse Google Chrome ou Microsoft Edge no computador.\nNo celular, o backup funciona pelo compartilhamento/download normalmente.');
+      return false;
+    }
+    try {
+      const parent = await window.showDirectoryPicker({ id: 'thone-crtwk-parent-pac', mode: 'readwrite', startIn: 'documents' });
+      const crtwk = await parent.getDirectoryHandle(CRTWK_FOLDER, { create: true });
+      const ok = await crtwk_setHandle(crtwk);
+      if (ok) {
+        toast('✅ Pasta crtwk ativada!', 'success');
+        await crtwk_atualizarStatus();
+        return true;
+      }
+      alert('Não foi possível salvar a referência da pasta.');
+      return false;
+    } catch(e) {
+      if (e && e.name === 'AbortError') { toast('Ativação cancelada'); return false; }
+      alert('Erro ao criar pasta: ' + (e.message || e));
+      return false;
+    }
+  }
+
+  async function crtwk_desativar() {
+    if (!confirm('Desativar a pasta crtwk?\n\nOs próximos backups usarão o compartilhamento/download normal.')) return;
+    await crtwk_removerHandle();
+    toast('Pasta crtwk desativada');
+    await crtwk_atualizarStatus();
+  }
+
+  async function crtwk_atualizarStatus() {
+    const el = $('crtwkStatus'); if (!el) return;
+    if (!crtwk_suportado()) {
+      el.className = 'info-box warn';
+      el.innerHTML = '<i class="fas fa-info-circle"></i><div><strong>Não suportado neste navegador.</strong> Use Chrome/Edge no computador para ativar. No celular, o backup segue pelo compartilhamento do sistema.</div>';
+      return;
+    }
+    const handle = await crtwk_getHandle();
+    if (!handle) {
+      el.className = 'info-box info';
+      el.innerHTML = '<i class="fas fa-info-circle"></i><div><strong>Pasta crtwk inativa.</strong> Os backups usam compartilhamento/download. Clique em <strong>Ativar pasta crtwk</strong> para salvar automaticamente numa pasta <code>crtwk</code>.</div>';
+      return;
+    }
+    let perm = 'prompt';
+    try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) {}
+    if (perm === 'granted') {
+      el.className = 'info-box sucesso';
+      el.innerHTML = '<i class="fas fa-check-circle"></i><div><strong>✅ Pasta crtwk ativa!</strong> Backups salvos automaticamente em <code>crtwk/</code>. Ao restaurar, o app abrirá essa pasta.</div>';
+    } else {
+      el.className = 'info-box warn';
+      el.innerHTML = '<i class="fas fa-exclamation-triangle"></i><div><strong>Permissão expirou.</strong> Clique em <strong>Ativar pasta crtwk</strong> novamente para reautorizar.</div>';
+    }
+  }
+
+  /* TENTA SALVAR NA PASTA crtwk (só se já ativada E com permissão) */
+  async function crtwk_tentarSalvar(nome, conteudo) {
+    const handle = await crtwk_getHandle();
+    if (!handle) return { ok: false };  // Não ativado → fallback silencioso
+    try {
+      let perm;
+      try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) { perm = 'prompt'; }
+      if (perm === 'prompt') {
+        // Tenta requestPermission — funciona se ainda houver gesture válido
+        try { perm = await handle.requestPermission({ mode: 'readwrite' }); } catch(_) { perm = 'denied'; }
+      }
+      if (perm !== 'granted') return { ok: false };  // Cai no fallback silenciosamente
+      const fh = await handle.getFileHandle(nome, { create: true });
+      const w = await fh.createWritable();
+      await w.write(conteudo);
+      await w.close();
+      return { ok: true, metodo: 'crtwk' };
+    } catch(e) {
+      console.warn('[crtwk] save error:', e);
+      return { ok: false };
+    }
+  }
+
+  /* LISTA ARQUIVOS DA PASTA crtwk */
+  async function crtwk_listarArquivos(handle) {
+    const arquivos = [];
+    try {
+      for await (const [nome, h] of handle.entries()) {
+        if (h.kind === 'file' && nome.toLowerCase().endsWith('.json')) {
+          try { const f = await h.getFile(); arquivos.push({ nome, handle: h, size: f.size, mtime: f.lastModified }); } catch(_) {}
+        }
+      }
+    } catch(e) { console.warn('[crtwk] list error:', e); }
+    arquivos.sort((a, b) => b.mtime - a.mtime);
+    return arquivos;
+  }
+
+  /* ABRE MODAL crtwk PICKER */
+  function crtwk_abrirPicker(handle) {
+    // Retorna Promise resolvida com:
+    //   { action: 'pick', data: string }  — usuário escolheu um arquivo
+    //   { action: 'fallback' }            — usuário quer file picker normal
+    //   { action: 'cancel' }              — usuário cancelou tudo
+    return new Promise(async (resolve) => {
+      try {
+        const arquivos = await crtwk_listarArquivos(handle);
+        if (arquivos.length === 0) {
+          resolve({ action: 'fallback' });
+          return;
+        }
+        const modal = $('modalCrtwkPicker');
+        const listEl = $('crtwkPickerList');
+        const btnOutro = $('crtwkEscolherOutro');
+        const btnFechar = $('btnFecharCrtwkPicker');
+
+        const fmtSize = s => s < 1024 ? s + ' B' : s < 1024*1024 ? (s/1024).toFixed(1) + ' KB' : (s/(1024*1024)).toFixed(2) + ' MB';
+        const fmtDate = ts => new Date(ts).toLocaleString('pt-BR');
+
+        listEl.innerHTML = arquivos.map((a, i) =>
+          `<div class="crtwk-file-item" data-idx="${i}"><i class="fas fa-file-code fi-icon"></i><div class="fi-body"><div class="fi-name">${escapeHtml(a.nome)}</div><div class="fi-meta">${fmtSize(a.size)} • ${fmtDate(a.mtime)}</div></div><i class="fas fa-chevron-right fi-arrow"></i></div>`
+        ).join('');
+
+        const cleanup = () => { modal.classList.add('hidden'); listEl.innerHTML = ''; };
+
+        listEl.querySelectorAll('.crtwk-file-item').forEach(el => {
+          el.addEventListener('click', async () => {
+            const idx = parseInt(el.dataset.idx);
+            try {
+              const conteudo = await (await arquivos[idx].handle.getFile()).text();
+              cleanup();
+              resolve({ action: 'pick', data: conteudo });
+            } catch(e) {
+              alert('❌ Erro ao ler arquivo: ' + (e.message || e));
+            }
+          });
+        });
+
+        btnOutro.onclick = () => { cleanup(); resolve({ action: 'fallback' }); };
+        btnFechar.onclick = () => { cleanup(); resolve({ action: 'cancel' }); };
+        modal.onclick = (e) => { if (e.target === modal) { cleanup(); resolve({ action: 'cancel' }); } };
+
+        modal.classList.remove('hidden');
+      } catch(e) {
+        console.warn('[crtwk] picker error:', e);
+        resolve({ action: 'fallback' });
+      }
+    });
+  }
+
+  /* ESCOLHER ARQUIVO PARA RESTAURAR */
+  async function escolherArquivoBackup() {
+    // 1. Tenta crtwk se ativada
+    try {
+      const handle = await crtwk_getHandle();
+      if (handle) {
+        let perm;
+        try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch(_) { perm = 'prompt'; }
+        if (perm === 'prompt') {
+          try { perm = await handle.requestPermission({ mode: 'readwrite' }); } catch(_) { perm = 'denied'; }
+        }
+        if (perm === 'granted') {
+          const result = await crtwk_abrirPicker(handle);
+          if (result.action === 'pick') return result.data;
+          if (result.action === 'cancel') return null;  // Cancelou → não abre file picker
+          // action === 'fallback' → continua abaixo
+        }
+      }
+    } catch(e) {
+      console.warn('[crtwk] restore error:', e);
+    }
+
+    // 2. Fallback: file input (sempre funciona)
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return resolve(null);
+        try { resolve(await file.text()); } catch(_) { resolve(null); }
+      };
+      input.click();
+    });
+  }
+
+  /* ============================================================
+     SALVAR ARQUIVO — PRIORIDADE: crtwk (se ativa) → desktop picker → web share → download
+     ============================================================ */
+  async function salvarArquivo(nome, conteudo) {
+    // 1) Tenta crtwk primeiro (só se ativada)
+    try {
+      const crtwkRes = await crtwk_tentarSalvar(nome, conteudo);
+      if (crtwkRes.ok) return { ok: true, metodo: 'crtwk', nome };
+    } catch(e) { console.warn('[save] crtwk falhou, fallback:', e); }
+
+    // 2) Desktop: showSaveFilePicker
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+    if (!isMobile && typeof window.showSaveFilePicker === 'function') {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: nome, types: [{ description: 'Backup JSON', accept: { 'application/json': ['.json'] } }] });
+        const w = await h.createWritable();
+        await w.write(conteudo);
+        await w.close();
+        return { ok: true, metodo: 'fs' };
+      } catch(e) {
+        if (e && e.name === 'AbortError') return { ok: false, cancelado: true };
+        console.warn('[save] showSaveFilePicker falhou:', e);
+      }
+    }
+
+    // 3) Mobile: Web Share
+    try {
+      const blob = new Blob([conteudo], { type: 'application/json' });
+      const file = new File([blob], nome, { type: 'application/json' });
+      if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Backup Th.One', text: 'Backup do Portal do Paciente' });
+        return { ok: true, metodo: 'share' };
+      }
+    } catch(e) {
+      if (e && e.name === 'AbortError') return { ok: false, cancelado: true };
+      console.warn('[save] Web Share falhou:', e);
+    }
+
+    // 4) Download clássico (sempre funciona)
+    try {
+      const blob = new Blob([conteudo], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nome;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      await new Promise(r => setTimeout(r, 80));
+      a.click();
+      setTimeout(() => { try { document.body.removeChild(a); URL.revokeObjectURL(url); } catch (_) {} }, 4000);
+      return { ok: true, metodo: 'download' };
+    } catch(e) {
+      console.warn('[save] download falhou:', e);
+      return { ok: false, fallback: true };
+    }
+  }
+
+  function showJsonFallback(nome, json) {
+    const w = window.open('', '_blank');
+    if (!w) { alert('Não foi possível salvar automaticamente.\n\nNome sugerido: ' + nome); return; }
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Backup</title>
+      <style>body{font-family:system-ui,sans-serif;padding:16px;background:#f4faf7;color:#1a2b23;}h2{color:#0b3b2e;font-size:1.1rem;margin-bottom:10px;}textarea{width:100%;height:60vh;font-family:monospace;font-size:12px;padding:10px;border:1px solid #c8ddcf;border-radius:10px;background:#fff;box-sizing:border-box;}button{padding:12px 18px;border:none;border-radius:20px;background:#2aa57a;color:#fff;font-weight:700;cursor:pointer;margin-top:10px;margin-right:8px;font-size:0.9rem;}</style>
+      </head><body><h2>📥 Backup manual</h2>
+      <p style="font-size:0.88rem;"><strong>Nome:</strong> <code style="word-break:break-all;">${escapeHtml(nome)}</code></p>
+      <textarea id="ta" readonly>${escapeHtml(json)}</textarea><br>
+      <button onclick="document.getElementById('ta').select();document.execCommand('copy');this.textContent='✅ Copiado!'">📋 Copiar JSON</button>
+      <button onclick="window.close()">✕ Fechar</button></body></html>`);
+    w.document.close();
+  }
+
+  /* PERSISTÊNCIA */
+  function loadAll() {
+    try { const s = localStorage.getItem(STORAGE.paciente); if (s) paciente = Object.assign(paciente, JSON.parse(s)); } catch(_) {}
+    try { const s = localStorage.getItem(STORAGE.profissionais); if (s) profissionais = JSON.parse(s) || []; } catch(_) {}
+    try { const s = localStorage.getItem(STORAGE.especialidades); if (s) especialidades = JSON.parse(s) || []; } catch(_) {}
+    try { const s = localStorage.getItem(STORAGE.agendamentos); if (s) { const d = JSON.parse(s); if (Array.isArray(d.agendamentos)) agendamentos = d.agendamentos; if (d.nextAgId) nextAgId = d.nextAgId; } } catch(_) {}
+    try { const s = localStorage.getItem(STORAGE.config); if (s) config = Object.assign(config, JSON.parse(s)); } catch(_) {}
+  }
+  const savePaciente = () => { try { localStorage.setItem(STORAGE.paciente, JSON.stringify(paciente)); } catch(_) {} };
+  const saveProfissionais = () => { try { localStorage.setItem(STORAGE.profissionais, JSON.stringify(profissionais)); } catch(_) {} };
+  const saveEspecialidades = () => { try { localStorage.setItem(STORAGE.especialidades, JSON.stringify(especialidades)); } catch(_) {} };
+  const saveAgendamentos = () => { try { localStorage.setItem(STORAGE.agendamentos, JSON.stringify({ agendamentos, nextAgId })); } catch(_) {} };
+  const saveConfig = () => { try { localStorage.setItem(STORAGE.config, JSON.stringify(config)); } catch(_) {} };
+
+  function applyTheme(t) { document.body.style.background = THEMES[t] || THEMES.green; try { localStorage.setItem('thone_portal_tema', t); } catch(_) {} }
+  function renderHeader() {
+    $('clinicaNome').textContent = config.nomeClinica || 'Th.One Terapias Integrativas';
+    const greeting = $('greeting'); const statusBadge = $('statusBadge');
+    if (paciente.id && paciente.nome) {
+      const primeiro = paciente.nome.trim().split(/\s+/)[0];
+      greeting.innerHTML = `Olá, <strong style="color:#0b3b2e;">${escapeHtml(primeiro)}</strong>! 👋`;
+      statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> ' + escapeHtml(primeiro);
+      statusBadge.style.background = '#e8f5e9'; statusBadge.style.color = '#1b5e20'; statusBadge.style.borderColor = '#a5d6a7';
+    } else {
+      greeting.textContent = 'Portal do Paciente';
+      statusBadge.innerHTML = '<i class="fas fa-user-circle"></i> Visitante';
+      statusBadge.style.background = '#fff9e0'; statusBadge.style.color = '#8a5a00'; statusBadge.style.borderColor = '#ffe082';
+    }
+    const logo = $('headerLogo'), icon = $('headerIcon');
+    logo.onerror = function() { this.style.display = 'none'; icon.style.display = 'inline-block'; };
+    logo.onload = function() { this.style.display = 'block'; icon.style.display = 'none'; };
+    logo.src = config.logo || 'logo.jpeg';
+  }
+
+  function trocarTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    const content = $('tab-' + tab); if (content) content.classList.add('active');
+    const btn = document.querySelector(`.nav-tabs button[data-tab="${tab}"]`); if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (tab === 'inicio') renderInicio();
+    if (tab === 'agendar') renderFormAgendamento();
+    if (tab === 'meus') renderMeusAgendamentos();
+    if (tab === 'profissionais') renderProfissionais();
+    if (tab === 'cadastro') renderCadastro();
+    if (tab === 'config') { renderConfig(); crtwk_atualizarStatus(); }
+  }
+
+  function popularSelects() {
+    const selProf = $('agProf'); if (selProf) selProf.innerHTML = '<option value="">— Selecione —</option>' + profissionais.map(p => `<option value="${p.id}">${escapeHtml(p.nome)}${p.registro ? ' (' + escapeHtml(p.registro) + ')' : ''}</option>`).join('');
+    const selEsp = $('agEsp'); if (selEsp) selEsp.innerHTML = '<option value="">— Selecione —</option>' + especialidades.map(e => `<option value="${e.id}">${escapeHtml(e.nome)}${e.valor ? ' — ' + formatCurrency(e.valor) : ''}</option>`).join('');
+  }
+
+  function renderFormAgendamento() {
+    const aviso = $('agendarAviso');
+    if (!paciente.id || !paciente.nome) aviso.innerHTML = `<div class="info-box warn"><i class="fas fa-exclamation-triangle"></i><div><strong>Cadastre-se primeiro.</strong> Vá em <a href="#" onclick="event.preventDefault();trocarTab('cadastro');" style="color:#8a5a00;font-weight:700;text-decoration:underline;">Meu Cadastro</a>.</div></div>`;
+    else if (profissionais.length === 0) aviso.innerHTML = `<div class="info-box warn"><i class="fas fa-user-md"></i><div><strong>Nenhum profissional importado.</strong> Vá em <a href="#" onclick="event.preventDefault();trocarTab('profissionais');" style="color:#8a5a00;font-weight:700;text-decoration:underline;">Profissionais</a>.</div></div>`;
+    else aviso.innerHTML = '';
+    const hoje = new Date(); $('agData').min = `${hoje.getFullYear()}-${pad2(hoje.getMonth()+1)}-${pad2(hoje.getDate())}`;
+    if (!$('agData').value) $('agData').value = $('agData').min;
+    popularSelects();
+  }
+
+  function limparFormAgendamento() { $('agProf').value = ''; $('agEsp').value = ''; $('agDur').value = ''; $('agValor').value = ''; $('agObs').value = ''; toast('Formulário limpo'); }
+
+  function salvarAgendamento() {
+    if (!paciente.id || !paciente.nome) { alert('Cadastre-se primeiro!'); trocarTab('cadastro'); return; }
+    const profId = parseInt($('agProf').value); if (!profId) { alert('Selecione o profissional.'); return; }
+    const espId = parseInt($('agEsp').value); if (!espId) { alert('Selecione a especialidade.'); return; }
+    const data = $('agData').value; const hora = $('agHora').value;
+    if (!data || !hora) { alert('Informe data e hora.'); return; }
+    if (new Date(`${data}T${hora}:00`).getTime() < Date.now() - 60000) { if (!confirm('⚠️ Data no passado. Continuar?')) return; }
+    const esp = especialidades.find(e => e.id === espId);
+    const dur = parseInt($('agDur').value) || (esp ? esp.duracao : 60) || 60;
+    const valor = parseDecimal($('agValor').value) || (esp ? esp.valor : 0) || 0;
+    const obs = $('agObs').value.trim();
+    const ag = { id: gerarIdUnico(), pacienteId: paciente.id, profissionalId: profId, especialidadeId: espId, dataHora: new Date(`${data}T${hora}:00`).getTime(), data, hora, valor, duracao: dur, status: 'Agendado', pagamento: '', obs, valorPago: 0, pagamentos: [], criadoEm: Date.now(), atualizadoEm: Date.now(), origem: 'portal_paciente' };
+    agendamentos.push(ag); saveAgendamentos();
+    toast('✅ Agendamento salvo!', 'success');
+    limparFormAgendamento(); renderInicio();
+    setTimeout(() => { if (confirm('Deseja enviar este agendamento ao profissional agora?')) abrirModalEnvio(ag.id); else trocarTab('meus'); }, 300);
+  }
+
+  function renderMeusAgendamentos() {
+    const el = $('meusAgendamentos');
+    let lista = [...agendamentos].sort((a, b) => b.dataHora - a.dataHora);
+    if (filtroStatus) lista = lista.filter(a => a.status === filtroStatus);
+    if (lista.length === 0) { el.innerHTML = `<div class="empty"><i class="fas fa-calendar-times"></i>Nenhum agendamento${filtroStatus ? ' com este status' : ''}.</div>`; return; }
+    el.innerHTML = lista.map(ag => renderCardAgendamento(ag)).join('');
+    el.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.dataset.id); const action = btn.dataset.action;
+        if (action === 'detalhes') abrirDetalhes(id);
+        if (action === 'enviar') abrirModalEnvio(id);
+        if (action === 'gcal') addGoogleCalendar(id);
+        if (action === 'cancelar') cancelarAgendamento(id);
+        if (action === 'excluir') excluirAgendamento(id);
+      });
+    });
+  }
+
+  function renderCardAgendamento(ag) {
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    const esp = especialidades.find(e => e.id === ag.especialidadeId);
+    const dt = new Date(ag.dataHora);
+    const dataStr = dt.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    const horaStr = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}`;
+    const badge = `badge-${ag.status.toLowerCase()}`;
+    const cardCls = ag.status.toLowerCase();
+    const corEsp = esp && esp.cor ? esp.cor : '#2aa57a';
+    return `<div class="card ${cardCls}">
+      <div class="card-header"><span class="esp-dot" style="background:${corEsp};"></span><span class="card-title">${escapeHtml(esp ? esp.nome : 'Especialidade')}</span><span class="badge ${badge}">${escapeHtml(ag.status)}</span></div>
+      <div class="card-meta"><span><i class="fas fa-user-md"></i> ${escapeHtml(prof ? prof.nome : '(Profissional não importado)')}</span><span><i class="fas fa-calendar"></i> ${dataStr}</span><span><i class="fas fa-clock"></i> ${horaStr} (${ag.duracao || 60}min)</span>${ag.valor ? `<span><i class="fas fa-dollar-sign"></i> ${formatCurrency(ag.valor)}</span>` : ''}</div>
+      ${ag.obs ? `<div class="card-obs"><i class="fas fa-notes-medical"></i> ${escapeHtml(ag.obs)}</div>` : ''}
+      <div class="card-actions">
+        <button class="btn btn-ghost btn-sm" data-action="detalhes" data-id="${ag.id}"><i class="fas fa-info-circle"></i> Detalhes</button>
+        <button class="btn btn-whats btn-sm" data-action="enviar" data-id="${ag.id}"><i class="fab fa-whatsapp"></i> Enviar</button>
+        <button class="btn btn-primary btn-sm" data-action="gcal" data-id="${ag.id}"><i class="fab fa-google"></i> Google</button>
+        ${ag.status !== 'Cancelado' ? `<button class="btn btn-ghost btn-sm" data-action="cancelar" data-id="${ag.id}"><i class="fas fa-ban"></i> Cancelar</button>` : ''}
+        <button class="btn btn-ghost btn-sm" data-action="excluir" data-id="${ag.id}" style="color:#c62828;border-color:#f0c0c0;"><i class="fas fa-trash-alt"></i></button>
+      </div></div>`;
+  }
+
+  function cancelarAgendamento(id) {
+    const ag = agendamentos.find(a => a.id === id); if (!ag) return;
+    if (!confirm('Cancelar este agendamento?')) return;
+    ag.status = 'Cancelado'; ag.atualizadoEm = Date.now(); saveAgendamentos();
+    renderMeusAgendamentos(); renderInicio(); toast('Agendamento cancelado');
+    if (confirm('Deseja avisar o profissional por WhatsApp?')) {
+      const prof = profissionais.find(p => p.id === ag.profissionalId);
+      if (prof && prof.telefone) {
+        const esp = especialidades.find(e => e.id === ag.especialidadeId);
+        abrirWA(prof.telefone, `Olá, *${prof.nome}*! Preciso *cancelar* meu agendamento:\n\n📅 ${new Date(ag.dataHora).toLocaleString('pt-BR')}\n💆 ${esp ? esp.nome : '—'}\n\nPaciente: ${paciente.nome}\nTelefone: ${paciente.telefone || '—'}`);
+      } else alert('O profissional não tem WhatsApp cadastrado no seu portal.');
+    }
+  }
+
+  function excluirAgendamento(id) {
+    if (!confirm('Excluir este agendamento?')) return;
+    agendamentos = agendamentos.filter(a => a.id !== id); saveAgendamentos();
+    renderMeusAgendamentos(); renderInicio(); toast('Agendamento excluído');
+  }
+
+  function abrirDetalhes(id) {
+    const ag = agendamentos.find(a => a.id === id); if (!ag) return;
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    const esp = especialidades.find(e => e.id === ag.especialidadeId);
+    const dt = new Date(ag.dataHora);
+    $('modalDetalhesBody').innerHTML = `<div class="card-meta" style="font-size:0.9rem;line-height:1.8;">
+      <div><strong>Data/Hora:</strong> ${dt.toLocaleString('pt-BR')}</div>
+      <div><strong>Profissional:</strong> ${escapeHtml(prof ? prof.nome : '(não importado)')}</div>
+      <div><strong>Especialidade:</strong> ${escapeHtml(esp ? esp.nome : '—')}</div>
+      <div><strong>Duração:</strong> ${ag.duracao || 60} min</div>
+      <div><strong>Valor:</strong> ${formatCurrency(ag.valor)}</div>
+      <div><strong>Status:</strong> <span class="badge badge-${ag.status.toLowerCase()}">${escapeHtml(ag.status)}</span></div>
+      ${ag.obs ? `<div style="grid-column:1/-1;padding:8px 12px;background:#f0fdf8;border-radius:10px;"><strong>Obs:</strong> ${escapeHtml(ag.obs)}</div>` : ''}
+    </div>`;
+    $('modalDetalhes').classList.remove('hidden');
+  }
+
+  function renderInicio() {
+    const banner = $('bannerSemCadastro');
+    if (!paciente.id || !paciente.nome) banner.innerHTML = `<div class="info-box warn"><i class="fas fa-user-plus"></i><div><strong>Bem-vindo(a)!</strong> Comece cadastrando seus dados em <a href="#" onclick="event.preventDefault();trocarTab('cadastro');" style="color:#8a5a00;font-weight:700;text-decoration:underline;">Meu Cadastro</a>.</div></div>`;
+    else banner.innerHTML = '';
+    $('dashTotal').textContent = agendamentos.length;
+    const ativos = agendamentos.filter(a => a.status !== 'Cancelado' && a.status !== 'Faltou').length;
+    $('dashTotalSub').textContent = ativos + ' ativo(s)';
+    const futuros = agendamentos.filter(a => a.dataHora > Date.now() && a.status !== 'Cancelado').sort((a, b) => a.dataHora - b.dataHora);
+    if (futuros.length > 0) { const dt = new Date(futuros[0].dataHora); $('dashProxQtd').textContent = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }); $('dashProxSub').textContent = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}`; }
+    else { $('dashProxQtd').textContent = '—'; $('dashProxSub').textContent = 'sem próximo'; }
+    $('dashProfQtd').textContent = profissionais.length;
+    $('dashProfSub').textContent = especialidades.length + ' especialidade(s)';
+    const el = $('inicioProximos');
+    if (futuros.length === 0) el.innerHTML = `<div class="empty"><i class="fas fa-calendar-day"></i>Nenhum agendamento futuro.<br><button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="trocarTab('agendar')"><i class="fas fa-calendar-plus"></i> Agendar agora</button></div>`;
+    else {
+      el.innerHTML = futuros.slice(0, 4).map(ag => renderCardAgendamento(ag)).join('');
+      el.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = parseInt(btn.dataset.id); const action = btn.dataset.action;
+          if (action === 'detalhes') abrirDetalhes(id);
+          if (action === 'enviar') abrirModalEnvio(id);
+          if (action === 'gcal') addGoogleCalendar(id);
+          if (action === 'cancelar') cancelarAgendamento(id);
+          if (action === 'excluir') excluirAgendamento(id);
+        });
+      });
+    }
+  }
+
+  function renderProfissionais() {
+    $('countProf').textContent = profissionais.length;
+    $('countEsp').textContent = especialidades.length;
+    const elP = $('listaProfissionais');
+    if (profissionais.length === 0) elP.innerHTML = `<div class="empty"><i class="fas fa-user-md"></i>Nenhum profissional importado.<br><span style="font-size:0.82rem;">Solicite via WhatsApp ou importe um backup.</span></div>`;
+    else elP.innerHTML = profissionais.map(p => `<div class="card"><div class="card-header"><span class="card-title"><i class="fas fa-user-md" style="color:#2aa57a;"></i> ${escapeHtml(p.nome)}</span>${p.telefone ? '<span class="badge badge-info"><i class="fab fa-whatsapp"></i> WhatsApp</span>' : ''}</div><div class="card-meta">${p.registro ? `<span><i class="fas fa-id-badge"></i> ${escapeHtml(p.registro)}</span>` : ''}${p.telefone ? `<span><i class="fas fa-phone"></i> ${escapeHtml(p.telefone)}</span>` : ''}${p.email ? `<span><i class="fas fa-envelope"></i> ${escapeHtml(p.email)}</span>` : ''}</div>${p.obs ? `<div class="card-obs">${escapeHtml(p.obs)}</div>` : ''}${p.telefone ? `<div class="card-actions"><button class="btn btn-whats btn-sm" onclick="abrirWAProf('${escapeHtml(p.telefone)}', '${escapeHtml(p.nome).replace(/'/g, '&#39;')}')"><i class="fab fa-whatsapp"></i> Falar</button></div>` : ''}</div>`).join('');
+    const elE = $('listaEspecialidades');
+    if (especialidades.length === 0) elE.innerHTML = `<div class="empty"><i class="fas fa-leaf"></i>Nenhuma especialidade importada.</div>`;
+    else elE.innerHTML = especialidades.map(e => `<div class="card"><div class="card-header"><span class="esp-dot" style="background:${e.cor || '#2aa57a'};"></span><span class="card-title">${escapeHtml(e.nome)}</span></div><div class="card-meta">${e.duracao ? `<span><i class="fas fa-clock"></i> ${e.duracao} min</span>` : ''}${e.valor ? `<span><i class="fas fa-dollar-sign"></i> ${formatCurrency(e.valor)}</span>` : ''}${e.desc ? `<span style="flex-basis:100%;color:#4a6a60;">${escapeHtml(e.desc)}</span>` : ''}</div></div>`).join('');
+  }
+
+  window.abrirWAProf = function(tel, nome) { abrirWA(tel, `Olá, *${nome}*! Sou paciente do sistema Th.One e gostaria de informações.`); };
+
+  function renderCadastro() {
+    $('cadNome').value = paciente.nome || ''; $('cadTelefone').value = paciente.telefone || ''; $('cadEmail').value = paciente.email || '';
+    $('cadNasc').value = paciente.nascimento || ''; $('cadCpf').value = paciente.cpf || ''; $('cadEndereco').value = paciente.endereco || ''; $('cadObs').value = paciente.obs || '';
+  }
+
+  function salvarCadastro() {
+    const nome = $('cadNome').value.trim();
+    if (!nome) { alert('O nome é obrigatório.'); return; }
+    paciente.nome = nome;
+    paciente.telefone = maskTelefone($('cadTelefone').value);
+    paciente.email = $('cadEmail').value.trim();
+    paciente.nascimento = maskData($('cadNasc').value);
+    paciente.cpf = maskCPF($('cadCpf').value);
+    paciente.endereco = $('cadEndereco').value.trim();
+    paciente.obs = $('cadObs').value.trim();
+    paciente.atualizadoEm = Date.now();
+    if (!paciente.id) paciente.id = gerarIdUnico();
+    savePaciente(); renderHeader(); toast('✅ Dados salvos!', 'success'); renderInicio();
+  }
+
+  function renderConfig() { $('cfgNomeClinica').value = config.nomeClinica || ''; $('cfgTelefoneCentral').value = config.telefoneCentral || ''; }
+
+  function gerarLinkGcal(ag) {
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    const esp = especialidades.find(e => e.id === ag.especialidadeId);
+    const dt = new Date(ag.dataHora);
+    const dur = parseInt(ag.duracao) || 60;
+    const dtFim = new Date(dt.getTime() + dur * 60 * 1000);
+    const fmt = d => `${d.getUTCFullYear()}${pad2(d.getUTCMonth()+1)}${pad2(d.getUTCDate())}T${pad2(d.getUTCHours())}${pad2(d.getUTCMinutes())}00Z`;
+    const detalhes = [`Paciente: ${paciente.nome || 'N/A'}`, prof ? `Profissional: ${prof.nome}` : '', esp ? `Especialidade: ${esp.nome}` : '', `Duração: ${dur} min`, ag.valor ? `Valor: ${formatCurrency(ag.valor)}` : '', ag.obs ? `Obs: ${ag.obs}` : ''].filter(Boolean).join('\n');
+    const params = new URLSearchParams({ action: 'TEMPLATE', text: `${esp ? esp.nome : 'Atendimento'}${prof ? ' — ' + prof.nome : ''}`, dates: `${fmt(dt)}/${fmt(dtFim)}`, details: detalhes, location: config.nomeClinica || '' });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
+  function addGoogleCalendar(id) { const ag = agendamentos.find(a => a.id === id); if (!ag) return; window.open(gerarLinkGcal(ag), '_blank'); toast('Abrindo Google Agenda...'); }
+
+  function construirMensagemAgendamento(ag) {
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    const esp = especialidades.find(e => e.id === ag.especialidadeId);
+    const dt = new Date(ag.dataHora);
+    const dataFmt = dt.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    const horaFmt = `${pad2(dt.getHours())}:${pad2(dt.getMinutes())}`;
+    let txt = `*🌸 Nova solicitação de agendamento*\n\n`;
+    txt += `*Paciente:* ${paciente.nome || '—'}\n`;
+    if (paciente.telefone) txt += `*Telefone:* ${paciente.telefone}\n`;
+    if (paciente.email) txt += `*E-mail:* ${paciente.email}\n`;
+    txt += `\n*Profissional:* ${prof ? prof.nome : '—'}\n*Especialidade:* ${esp ? esp.nome : '—'}\n*Data:* ${dataFmt}\n*Horário:* ${horaFmt}\n*Duração:* ${ag.duracao || 60} min\n`;
+    if (ag.valor) txt += `*Valor:* ${formatCurrency(ag.valor)}\n`;
+    if (ag.obs) txt += `\n*Observações:* ${ag.obs}\n`;
+    txt += `\n_Por favor, confirme o agendamento. Obrigado(a)!_`;
+    return txt;
+  }
+
+  function abrirModalEnvio(id) {
+    const ag = agendamentos.find(a => a.id === id); if (!ag) return;
+    agSelecionadoParaEnvio = ag;
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    $('modalEnviarInfo').innerHTML = `<div class="card-meta" style="font-size:0.88rem;line-height:1.7;padding:10px 12px;background:#f0fdf8;border-radius:12px;"><div><strong>Profissional:</strong> ${escapeHtml(prof ? prof.nome : '(não importado)')}</div><div><strong>Data:</strong> ${new Date(ag.dataHora).toLocaleString('pt-BR')}</div>${prof && prof.telefone ? `<div><strong>WhatsApp:</strong> ${escapeHtml(prof.telefone)}</div>` : '<div style="color:#c62828;"><strong>⚠️ Sem WhatsApp</strong></div>'}</div>`;
+    $('btnEnviarTexto').disabled = !(prof && prof.telefone);
+    $('modalEnviar').classList.remove('hidden');
+  }
+
+  function enviarTextoWA() {
+    const ag = agSelecionadoParaEnvio; if (!ag) return;
+    const prof = profissionais.find(p => p.id === ag.profissionalId);
+    if (!prof || !prof.telefone) { alert('Este profissional não tem WhatsApp cadastrado.'); return; }
+    abrirWA(prof.telefone, construirMensagemAgendamento(ag));
+    toast('Abrindo WhatsApp...'); $('modalEnviar').classList.add('hidden');
+  }
+
+  function buildIncrementalExport() {
+    return { versao: '1.0', tipo: 'thone_incremental_backup', dataBackup: new Date().toISOString(), dispositivo: getNomeDispositivo() + '_Paciente', dataLegivel: new Date().toLocaleString('pt-BR'), referencia: 0, referenciaLegivel: '(paciente)', origem: 'portal_paciente', pacientes: paciente.id ? [Object.assign({}, paciente)] : [], profissionais: [], especialidades: [], agendamentos: agendamentos.map(a => Object.assign({}, a)), planos: [], stockItems: [], eventos: [] };
+  }
+  function gerarNomeArquivoInc() { const a = new Date(); return `ThOne_INC_Paciente_${pad2(a.getDate())}${pad2(a.getMonth()+1)}${a.getFullYear()}_${pad2(a.getHours())}${pad2(a.getMinutes())}${pad2(a.getSeconds())}.json`; }
+
+  async function exportarIncremental() {
+    if (agendamentos.length === 0 && (!paciente.id || !paciente.nome)) { alert('Você ainda não tem dados para exportar.'); return; }
+    try {
+      const dados = buildIncrementalExport();
+      const json = JSON.stringify(dados, null, 2);
+      const nome = gerarNomeArquivoInc();
+      const res = await salvarArquivo(nome, json);
+      if (res.cancelado) return;
+      if (res.ok) {
+        if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
+        else if (res.metodo === 'share') toast('Compartilhe o arquivo e salve onde preferir', 'success');
+        else toast('✅ Arquivo salvo!', 'success');
+      } else {
+        showJsonFallback(nome, json);
+      }
+    } catch(e) {
+      console.error('[exportarIncremental]', e);
+      alert('Erro ao exportar: ' + (e.message || e));
+    }
+  }
+
+  async function exportarWhatsApp() {
+    if (agendamentos.length === 0) { alert('Você ainda não tem agendamentos para enviar.'); return; }
+    const prof = profissionais.find(p => p.telefone);
+    if (!prof) { alert('Nenhum profissional com WhatsApp importado.'); return; }
+    if (!confirm(`Enviar resumo via WhatsApp para ${prof.nome}?`)) return;
+    let txt = `*📤 Agendamentos — ${paciente.nome || 'Paciente'}*\n\n`;
+    agendamentos.forEach(ag => { const esp = especialidades.find(e => e.id === ag.especialidadeId); const dt = new Date(ag.dataHora); txt += `• *${esp ? esp.nome : 'Atendimento'}* — ${dt.toLocaleString('pt-BR')} (${ag.status})\n`; });
+    txt += `\n_Envio também o arquivo JSON em seguida._`;
+    abrirWA(prof.telefone, txt);
+    setTimeout(() => { exportarIncremental().catch(e => console.warn(e)); }, 1500);
+  }
+
+  async function importarBackupGenerico() {
+    try {
+      const txt = await escolherArquivoBackup();
+      if (txt === null) return;
+      importarBackupJSON(txt);
+    } catch(e) {
+      console.error('[importarBackup]', e);
+      alert('Erro ao importar: ' + (e.message || e));
+    }
+  }
+
+  function importarBackupJSON(txt) {
+    let dados;
+    try { dados = JSON.parse(txt); } catch (e) { alert('❌ Arquivo JSON inválido.'); return; }
+    const tipo = dados.tipo || '';
+    const ehBackup = tipo === 'thone_incremental_backup' || tipo === 'thone_full_backup' || Array.isArray(dados.profissionais) || Array.isArray(dados.especialidades);
+    if (!ehBackup) { if (!confirm('⚠️ Este arquivo não parece ser um backup do Th.One.\nTentar mesmo assim?')) return; }
+    let nProf = 0, nEsp = 0, nAgAtualizados = 0;
+    const meusIds = new Set(agendamentos.map(a => a.id));
+    if (Array.isArray(dados.profissionais)) dados.profissionais.forEach(p => { if (!p || p.id === undefined) return; const idx = profissionais.findIndex(x => x.id === p.id); if (idx >= 0) profissionais[idx] = p; else profissionais.push(p); nProf++; });
+    if (Array.isArray(dados.especialidades)) dados.especialidades.forEach(e => { if (!e || e.id === undefined) return; const idx = especialidades.findIndex(x => x.id === e.id); if (idx >= 0) especialidades[idx] = e; else especialidades.push(e); nEsp++; });
+    if (Array.isArray(dados.agendamentos) && paciente.id) dados.agendamentos.forEach(ag => { if (!ag || ag.id === undefined) return; if (ag.pacienteId !== paciente.id && !meusIds.has(ag.id)) return; const idx = agendamentos.findIndex(a => a.id === ag.id); if (idx >= 0) { const oldT = agendamentos[idx].atualizadoEm || agendamentos[idx].criadoEm || 0; const newT = ag.atualizadoEm || ag.criadoEm || 0; if (newT >= oldT) { agendamentos[idx] = ag; nAgAtualizados++; } } else { agendamentos.push(ag); nAgAtualizados++; } });
+    if (Array.isArray(dados.pacientes) && paciente.id) { const meu = dados.pacientes.find(p => p.id === paciente.id); if (meu) { paciente.nome = paciente.nome || meu.nome; paciente.telefone = paciente.telefone || meu.telefone; paciente.email = paciente.email || meu.email; } }
+    const maxId = agendamentos.reduce((m, a) => Math.max(m, a.id || 0), 0); if (maxId >= nextAgId) nextAgId = maxId + 1;
+    saveProfissionais(); saveEspecialidades(); saveAgendamentos(); savePaciente();
+    popularSelects(); renderProfissionais(); renderMeusAgendamentos(); renderInicio(); renderHeader();
+    toast(`✅ Importado: ${nProf} prof., ${nEsp} esp., ${nAgAtualizados} ag.`, 'success');
+  }
+
+  async function backupPortal() {
+    try {
+      const dados = { versao: '1.0', tipo: 'thone_portal_paciente_full_backup', dataBackup: new Date().toISOString(), dispositivo: getNomeDispositivo(), dataLegivel: new Date().toLocaleString('pt-BR'), paciente, profissionais, especialidades, agendamentos, nextAgId, config };
+      const json = JSON.stringify(dados, null, 2);
+      const a = new Date(); const nome = `ThOne_PortalPaciente_${pad2(a.getDate())}${pad2(a.getMonth()+1)}${a.getFullYear()}_${pad2(a.getHours())}${pad2(a.getMinutes())}.json`;
+      const res = await salvarArquivo(nome, json);
+      if (res.cancelado) return;
+      if (res.ok) {
+        if (res.metodo === 'crtwk') toast('✅ Salvo em crtwk/' + nome, 'success');
+        else toast('✅ Backup salvo!', 'success');
+      } else {
+        showJsonFallback(nome, json);
+      }
+    } catch(e) {
+      console.error('[backupPortal]', e);
+      alert('Erro ao fazer backup: ' + (e.message || e));
+    }
+  }
+
+  async function restaurarPortal() {
+    try {
+      const txt = await escolherArquivoBackup();
+      if (txt === null) return;
+      const dados = JSON.parse(txt);
+      if (dados.tipo !== 'thone_portal_paciente_full_backup' && !dados.paciente) { if (!confirm('⚠️ Backup não reconhecido.\nTentar mesmo assim?')) return; }
+      if (!confirm('⚠️ Restaurar SUBSTITUIRÁ todos os dados atuais.\nContinuar?')) return;
+      if (dados.paciente) paciente = Object.assign(paciente, dados.paciente);
+      if (Array.isArray(dados.profissionais)) profissionais = dados.profissionais;
+      if (Array.isArray(dados.especialidades)) especialidades = dados.especialidades;
+      if (Array.isArray(dados.agendamentos)) agendamentos = dados.agendamentos;
+      if (dados.nextAgId) nextAgId = dados.nextAgId;
+      if (dados.config) config = Object.assign(config, dados.config);
+      savePaciente(); saveProfissionais(); saveEspecialidades(); saveAgendamentos(); saveConfig();
+      renderAll(); toast('✅ Portal restaurado!', 'success');
+    } catch(e) {
+      console.error('[restaurarPortal]', e);
+      alert('❌ Erro ao restaurar: ' + (e.message || e));
+    }
+  }
+
+  function limparTudo() {
+    if (!confirm('⚠️ Apagar TODOS os dados deste portal?')) return;
+    if (!confirm('Tem certeza ABSOLUTA?')) return;
+    Object.values(STORAGE).forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+    try { localStorage.removeItem('thone_portal_tema'); } catch (_) {}
+    paciente = { id: null, nome: '', telefone: '', email: '', nascimento: '', cpf: '', endereco: '', obs: '' };
+    profissionais = []; especialidades = []; agendamentos = []; nextAgId = 1;
+    config = { nomeClinica: 'Th.One Terapias Integrativas', telefoneCentral: '', tema: 'green', logo: null };
+    renderAll(); toast('Portal limpo', 'success');
+  }
+
+  function solicitarProfissionais() {
+    if (!config.telefoneCentral) { if (confirm('Configure o WhatsApp da central.\nConfigurar agora?')) { trocarTab('config'); setTimeout(() => $('cfgTelefoneCentral').focus(), 200); } return; }
+    abrirWA(config.telefoneCentral, `Olá! Sou paciente do *Th.One Terapias Integrativas*.\n\nPoderia me enviar o *backup incremental* contendo *profissionais* e *especialidades*?\n\nObrigado(a) 🌸\n\n— ${paciente.nome || 'Paciente'}`);
+    toast('Abrindo WhatsApp...');
+  }
+
+  function renderAll() {
+    renderHeader(); popularSelects(); renderInicio(); renderMeusAgendamentos(); renderProfissionais(); renderCadastro(); renderConfig();
+  }
+
+  function init() {
+    try {
+      loadAll();
+      let savedTema = 'green'; try { savedTema = localStorage.getItem('thone_portal_tema') || 'green'; } catch (_) {}
+      $('themeSelect').value = savedTema; applyTheme(savedTema);
+      aplicarMascara($('cadTelefone'), maskTelefone); aplicarMascara($('cadCpf'), maskCPF); aplicarMascara($('cadNasc'), maskData); aplicarMascara($('cfgTelefoneCentral'), maskTelefone);
+
+      document.querySelectorAll('.nav-tabs button').forEach(btn => btn.addEventListener('click', () => trocarTab(btn.dataset.tab)));
+      $('themeSelect').addEventListener('change', function () { applyTheme(this.value); });
+      $('btnSalvarAg').addEventListener('click', salvarAgendamento);
+      $('agEsp').addEventListener('change', function () { const esp = especialidades.find(e => e.id === parseInt(this.value)); if (esp) { if (!$('agDur').value) $('agDur').value = esp.duracao || 60; if (!$('agValor').value) $('agValor').value = (esp.valor || 0).toFixed(2).replace('.', ','); } });
+      $('filtroStatus').addEventListener('change', function () { filtroStatus = this.value; renderMeusAgendamentos(); });
+      $('btnSalvarCadastro').addEventListener('click', salvarCadastro);
+      $('btnSolicitarProf').addEventListener('click', solicitarProfissionais);
+      $('btnImportarProf').addEventListener('click', importarBackupGenerico);
+      $('btnSalvarCfg').addEventListener('click', function () { config.nomeClinica = $('cfgNomeClinica').value.trim() || 'Th.One Terapias Integrativas'; config.telefoneCentral = maskTelefone($('cfgTelefoneCentral').value); saveConfig(); renderHeader(); toast('✅ Configurações salvas!', 'success'); });
+      $('btnExportarInc').addEventListener('click', exportarIncremental);
+      $('btnExportarWhats').addEventListener('click', exportarWhatsApp);
+      $('btnImportarCompleto').addEventListener('click', importarBackupGenerico);
+      $('btnBackupPortal').addEventListener('click', backupPortal);
+      $('btnRestorePortal').addEventListener('click', restaurarPortal);
+      $('btnLimparTudo').addEventListener('click', limparTudo);
+      $('btnEnviarTexto').addEventListener('click', enviarTextoWA);
+      $('btnEnviarArquivo').addEventListener('click', async () => { $('modalEnviar').classList.add('hidden'); await exportarIncremental(); });
+      $('btnAddGcal').addEventListener('click', () => { if (agSelecionadoParaEnvio) addGoogleCalendar(agSelecionadoParaEnvio.id); $('modalEnviar').classList.add('hidden'); });
+      $('btnFecharEnviar').addEventListener('click', () => $('modalEnviar').classList.add('hidden'));
+      $('btnFecharDetalhes').addEventListener('click', () => $('modalDetalhes').classList.add('hidden'));
+
+      // crtwk botões
+      $('btnCrtwkAtivar').addEventListener('click', crtwk_ativar);
+      $('btnCrtwkRemover').addEventListener('click', crtwk_desativar);
+
+      document.querySelectorAll('.modal-overlay').forEach(m => { m.addEventListener('click', e => { if (e.target === m && m.id !== 'modalCrtwkPicker') m.classList.add('hidden'); }); });
+      renderAll();
+      crtwk_atualizarStatus();
+    } catch(e) {
+      console.error('[init] erro fatal:', e);
+      alert('Erro ao iniciar o app: ' + (e.message || e) + '\n\nRecarregue a página.');
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.trocarTab = trocarTab;
+  window.limparFormAgendamento = limparFormAgendamento;
+})();
+</script>
+</body>
+</html>
